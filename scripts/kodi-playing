@@ -70,13 +70,14 @@ function show_song_info() {
         fi
         # Show notification
         notify-send -t 10000 -a "$KODIADDRESS:$KODIPORT" -i "$TMPTHUMB" "${ARR[0]}" "Artist: ${ARR[1]}${ALBUMSTR}${DURATIONSTR}"
+        echo "${ARR[0]}" "Artist: ${ARR[1]}${ALBUMSTR}${DURATIONSTR}"
     fi
 }
 
 # Function to get JSON song data from Kodi
 function get_song() {
     JSON=$(curl --silent --data-binary '{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title", "album", "artist", "duration", "thumbnail"], "playerid": 0 }, "id": "AudioGetItem"}' -H 'content-type: application/json;' http://$KODIADDRESS:$KODIPORT/jsonrpc)
-    echo -n $JSON
+    #echo -n $JSON
 }
 
 function usage() {
