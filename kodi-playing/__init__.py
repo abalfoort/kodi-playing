@@ -4,11 +4,16 @@ APPINDICATOR_ID = 'kodi-playing'
 
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
+from gi.repository import Gtk
+try:
+    gi.require_version('AppIndicator3', '0.1')
+    from gi.repository import AppIndicator3
+except:
+    gi.require_version('AyatanaAppIndicator3', '0.1')
+    from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 
 import signal
 import subprocess
-from gi.repository import Gtk, AppIndicator3
 
 # i18n: http://docs.python.org/3/library/gettext.html
 import gettext

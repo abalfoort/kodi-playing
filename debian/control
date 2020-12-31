@@ -16,7 +16,7 @@ Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}, ${python3:Depends}
   , gir1.2-gtk-3.0
-  , gir1.2-appindicator3-0.1
+  , gir1.2-appindicator3-0.1 | gir1.2-ayatanaappindicator3-0.1
   , curl
   , jq
 Description: Show Kodi notification
