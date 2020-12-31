@@ -45,7 +45,7 @@ update:
 	#tx push -s
 
 	# Get translations from Transifex
-	#tx pull -a
+	tx pull -a
 
 	# Scan for .py files
 	@ xgettext \

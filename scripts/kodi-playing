@@ -39,7 +39,7 @@ if [ "$AUTOSTART" -eq 1 ]; then
         cat > "$AUTOSTARTDT" <<EOF
 [Desktop Entry]
 Name=Autostart kodi-playing
-Exec=kodi-playing -t &
+Exec=kodi-playing -t
 StartupNotify=false
 Terminal=false
 Type=Application
@@ -126,9 +126,12 @@ while getopts 'chi:lqst' OPT; do
             ;;
         t)
             # Start system tray icon
-            PID=$(ps a | grep  "import_module('kodi-playing')" | awk '{print $1}')
+            PID=$(ps a | grep  "import_module('kodi-playing')" | grep -v 'grep' | awk '{print $1}')
             if [ -z "$PID" ]; then
-                python3 -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main();" 2>/dev/null
+                try:
+                    python3 -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main();" &
+                except:
+                    echo "Python kodi-playing not installed - skipping"
             fi
             ;;
         \?|:)
