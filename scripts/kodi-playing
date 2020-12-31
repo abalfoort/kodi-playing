@@ -4,6 +4,8 @@
 # Depends:  curl, jq
 # Files:    $HOME/.kodi-playing
 # Usage:    kodi-playing -h
+#           Without arguments or with -t: add &:
+#           kodi-playing &
 # Author:   Arjen Balfoort, 28-12-2020
 
 # Paths
@@ -70,14 +72,14 @@ function show_song_info() {
         fi
         # Show notification
         notify-send -t 10000 -a "$KODIADDRESS:$KODIPORT" -i "$TMPTHUMB" "${ARR[0]}" "Artist: ${ARR[1]}${ALBUMSTR}${DURATIONSTR}"
-        echo "${ARR[0]}" "Artist: ${ARR[1]}${ALBUMSTR}${DURATIONSTR}"
+        echo "${ARR[0]}, Artist: ${ARR[1]}${ALBUMSTR}${DURATIONSTR}" | sed 's/<br>/, /g'
     fi
 }
 
 # Function to get JSON song data from Kodi
+JSON=""
 function get_song() {
     JSON=$(curl --silent --data-binary '{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title", "album", "artist", "duration", "thumbnail"], "playerid": 0 }, "id": "AudioGetItem"}' -H 'content-type: application/json;' http://$KODIADDRESS:$KODIPORT/jsonrpc)
-    #echo -n $JSON
 }
 
 function usage() {
@@ -129,10 +131,7 @@ while getopts 'chi:lqst' OPT; do
             # Start system tray icon
             PID=$(ps a | grep  "import_module('kodi-playing')" | grep -v 'grep' | awk '{print $1}')
             if [ -z "$PID" ]; then
-                try:
-                    python3 -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main();" &
-                except:
-                    echo "Python kodi-playing not installed - skipping"
+                python3 -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main();" 2>/dev/null &
             fi
             ;;
         \?|:)
@@ -158,10 +157,10 @@ echo -n "" > "$LOG"
 PREVTITLE=""
 while true; do
     # Get json data from Kodi
-    JSON=$(get_song)
+    get_song
     while [ -z "$JSON" ]; do
         # Kodi not running - keep checking
-        JSON=$(get_song)
+        get_song
         sleep 60
     done
     
@@ -214,7 +213,7 @@ while true; do
         if [ "$TITLESTR" != "$ARTISTSTR" ]; then
             # Logging
             echo
-            echo "\"$TITLESTR\";\"$ARTISTSTR\";\"$ALBUM\";\"$DURATION\";\"$THUMBNAILPATH\"" | tee -a "$LOG"
+            echo "\"$TITLESTR\";\"$ARTISTSTR\";\"$ALBUM\";\"$DURATION\";\"$THUMBNAILPATH\"" >> "$LOG"
             # Send notification
             show_song_info 1
         fi
