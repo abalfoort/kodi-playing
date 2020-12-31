@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pandoc -s -t man kodi-playing.1.md -o kodi-playing.1

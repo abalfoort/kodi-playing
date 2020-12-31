@@ -1,0 +1,23 @@
+Source: kodi-playing
+Section: video
+Priority: optional
+Maintainer: Arjen Balfoort <arjenbalfoort@hotmail.com>
+Build-Depends: debhelper-compat (= 12)
+  , dh-python
+  , python3-all
+  , transifex-client
+  , translate-toolkit
+Standards-Version: 4.5.0
+Vcs-Git: https://gitlab.com/abalfoort/kodi-playing.git
+X-Python3-Version: >= 3.6
+
+Package: kodi-playing
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${python3:Depends}
+  , gir1.2-gtk-3.0
+  , gir1.2-appindicator3-0.1
+  , curl
+  , jq
+Description: Show Kodi notification
+ Show a notification when your Kodi server is playing a new song.
