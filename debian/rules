@@ -60,8 +60,8 @@ update:
 	# Get strings from the desktop file
 	@ for LAUNCHER in $(desktopfls); do \
 		sed -r \
-			-e '/^(Name|Comment|GenericName|Keywords)\[/d' \
-			-e 's/^(Name=|Comment=|GenericName=|Keywords=)/_\1/' \
+			-e '/^(Comment|Keywords)\[/d' \
+			-e 's/^(Comment=|Keywords=)/_\1/' \
 			$$LAUNCHER > $$LAUNCHER.in ; \
 		intltool-extract --type=gettext/ini $$LAUNCHER.in ; \
 		xgettext \
