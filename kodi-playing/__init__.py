@@ -136,11 +136,7 @@ class KodiPlaying():
                 # .artist returns an array: use jq [] and bash () to handle it as an array in bash
                 artist = ' '.join(json['result']['item']['artist']).replace('"', '')
                 album = json['result']['item']['album'].replace('"', '')
-                
-                # Duration is returned is seconds
                 duration = json['result']['item']['duration']
-                # Convert to "00:00" notation
-                duration = strftime("%M:%S", gmtime(duration))
                 
                 # Retrieve thumbnail path
                 thumbnail = json['result']['item']['thumbnail']
@@ -207,10 +203,24 @@ class KodiPlaying():
                         break
 
         if csv_data:
+            artist_title = _("Artist")
+            album_title = _("Album")
+            duration_title = _("Duration")
+            album_str = ''
+            duration_str = ''
+            
             if csv_data[0][2]:
-                album_str = "<br>Album: %s" % csv_data[0][2]
+                album_str = "<br>%s: %s" % (album_title, csv_data[0][2])
             if csv_data[0][3]:
-                duration_str = "<br>Duration: %s" % csv_data[0][3]
+                # Convert to "00:00" notation
+                duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
+                played = duration
+                if index == 1:
+                    # Get time played
+                    played = self.get_song_time_played()
+                    # Convert to "00:00" notation
+                    played = strftime("%M:%S", gmtime(played))
+                duration_str = "<br>%s: %s (%s)" % (duration_title, played, duration)
 
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
@@ -219,12 +229,14 @@ class KodiPlaying():
                 elif len(csv_data) > 1:
                     if csv_data[0][4] != csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
+                        
+            
 
             # Show notification
             Notify.Notification.new(csv_data[0][0], 
-                                    "Artist: %s %s %s" % (csv_data[0][1], album_str, duration_str), 
+                                    "%s: %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
                                     self.tmp_thumb).show()
-            print(("Title: %s, Artist: %s, Album: %s, Duration: %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], csv_data[0][3])))
+            print(("%s, %s: %s, %s: %s, %s: %s" % (csv_data[0][0], artist_title, csv_data[0][1], album_title, csv_data[0][2], duration_title, csv_data[0][3])))
 
     def json_request(self, kodi_request):
         """ Return json data from Kodi. """
@@ -251,7 +263,8 @@ class KodiPlaying():
         kodi_request = {
             'jsonrpc': '2.0',
             'method': 'Player.PlayPause',
-            'params': { "playerid": 0 }, "id": 1}
+            'params': { "playerid": 0 },
+            "id": 1}
         self.json_request(kodi_request)
         
     def is_idle(self, seconds=60):
@@ -259,9 +272,21 @@ class KodiPlaying():
         kodi_request = {
             'jsonrpc': '2.0',
             'method': 'XBMC.GetInfoBooleans',
-            'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] }, "id": 1}
+            'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] },
+            "id": 1}
         json = self.json_request(kodi_request)
         return json['result']["System.IdleTime('{}')".format(seconds)]
+    
+    def get_song_time_played(self):
+        """ Get played seconds of currently playing song. """
+        kodi_request = {
+            'jsonrpc': '2.0',
+            'method': 'Player.GetProperties',
+            'params': { 'playerid': 0, 'properties': ['percentage', 'totaltime'] },
+            'id': 1}
+        json = self.json_request(kodi_request)
+        duration = (int(json['result']['totaltime']['minutes']) * 60) + int(json['result']['totaltime']['seconds'])
+        return duration * (float(json['result']['percentage']) / 100)
     
     # ===============================================
     # System Tray Icon
