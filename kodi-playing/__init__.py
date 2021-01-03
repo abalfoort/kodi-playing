@@ -52,6 +52,7 @@ class KodiPlaying():
         self.log = join(self.local_dir, "kodi-playing.csv")
         self.tmp_thumb = "/tmp/kodi-playing.png"
         self.autostart_dt = join(self.home, ".config/autostart/kodi-playing-autostart.desktop")
+        self.is_connected = False
         
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
@@ -104,12 +105,14 @@ class KodiPlaying():
                 # Kodi not running - keep checking
                 json = self.get_song()
                 if not json:
+                    self.is_connected = False
                     self.indicator.set_icon_full(join(self.scriptdir, 'kodi-playing-grey.svg'), '')
                     self.check_done_event.wait(self.wait)
             # Go not any further if json is empty
             if not json:
                 break
             # Connected: show normal icon
+            self.is_connected = True
             self.indicator.set_icon_full('kodi-playing', '')
 
             # Reset variables
@@ -200,10 +203,10 @@ class KodiPlaying():
 
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
-                if not exists(self.tmp_thumb):
+                if not exists(self.tmp_thumb) or len(csv_data) == 1:
                     urlretrieve(csv_data[0][4], self.tmp_thumb)
                 elif len(csv_data) > 1:
-                    if csv_data[0][4] !=  csv_data[1][4] or index > 1:
+                    if csv_data[0][4] != csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
 
             # Show notification
@@ -239,6 +242,15 @@ class KodiPlaying():
             'method': 'Player.PlayPause',
             'params': { "playerid": 0 }, "id": 1}
         self.json_request(kodi_request)
+        
+    def is_idle(self, seconds=60):
+        """ Check if Kodi has been idle for x seconds. """
+        kodi_request = {
+            'jsonrpc': '2.0',
+            'method': 'XBMC.GetInfoBooleans',
+            'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] }, "id": 1}
+        json = self.json_request(kodi_request)
+        return json['result']["System.IdleTime('{}')".format(seconds)]
     
     # ===============================================
     # System Tray Icon
@@ -320,9 +332,12 @@ class KodiPlaying():
         # Posted on stackoverflow: https://stackoverflow.com/questions/65544182/python3-linux-open-text-file-in-default-editor-and-wait-until-done
         pid = subprocess.check_output("ps -o pid,cmd -e | grep %s | head -n 1 | awk '{print $1}'" % self.conf, shell=True).decode('utf-8')
         while self.check_pid(pid):
+            # Read settings.ini
+            self.read_config()
+            # Repaint GUI, or the update won't show
+            while Gtk.events_pending():
+                Gtk.main_iteration()
             sleep(1)
-        # Read settings.ini
-        self.read_config()
         
     # ===============================================
     # General functions
