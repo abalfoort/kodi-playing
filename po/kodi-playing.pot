@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 13:59+0100\n"
+"POT-Creation-Date: 2021-01-03 17:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kodi-playing/__init__.py:238
+#: kodi-playing/__init__.py:250
 msgid "Now playing"
 msgstr ""
 
-#: kodi-playing/__init__.py:243
+#: kodi-playing/__init__.py:255
 msgid "Song by index"
 msgstr ""
 
-#: kodi-playing/__init__.py:245
+#: kodi-playing/__init__.py:257
 msgid "previous"
 msgstr ""
 
-#: kodi-playing/__init__.py:262
+#: kodi-playing/__init__.py:274
+msgid "Play/Pause"
+msgstr ""
+
+#: kodi-playing/__init__.py:280
 msgid "Show log"
 msgstr ""
 
-#: kodi-playing/__init__.py:266
+#: kodi-playing/__init__.py:284
 msgid "Edit settings"
 msgstr ""
 
-#: kodi-playing/__init__.py:272
+#: kodi-playing/__init__.py:290
 msgid "Quit"
 msgstr ""
 

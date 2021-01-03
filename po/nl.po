@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 13:57+0100\n"
+"POT-Creation-Date: 2021-01-03 17:32+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/abalfoort/teams/54212/nl/)\n"
@@ -21,27 +21,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kodi-playing/__init__.py:238
+#: kodi-playing/__init__.py:250
 msgid "Now playing"
 msgstr "Nu aan het spelen"
 
-#: kodi-playing/__init__.py:243
+#: kodi-playing/__init__.py:255
 msgid "Song by index"
 msgstr "Nummer op index"
 
-#: kodi-playing/__init__.py:245
+#: kodi-playing/__init__.py:257
 msgid "previous"
 msgstr "vorige"
 
-#: kodi-playing/__init__.py:262
+#: kodi-playing/__init__.py:274
+msgid "Play/Pause"
+msgstr "Speel/Pauze"
+
+#: kodi-playing/__init__.py:280
 msgid "Show log"
 msgstr "Toon log"
 
-#: kodi-playing/__init__.py:266
+#: kodi-playing/__init__.py:284
 msgid "Edit settings"
 msgstr "Settings aanpassen"
 
-#: kodi-playing/__init__.py:272
+#: kodi-playing/__init__.py:290
 msgid "Quit"
 msgstr "Afsluiten"
 
