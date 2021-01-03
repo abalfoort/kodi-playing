@@ -17,7 +17,8 @@ Multi-Arch: foreign
 Depends: ${misc:Depends}, ${python3:Depends}
   , gir1.2-gtk-3.0
   , gir1.2-appindicator3-0.1 | gir1.2-ayatanaappindicator3-0.1
-  , curl
-  , jq
+  , python3-simplejson
+  , python3-iniparse
+  , xdg-utils
 Description: Show Kodi notification
  Show a notification when your Kodi server is playing a new song.
