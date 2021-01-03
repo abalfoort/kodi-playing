@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 17:32+0100\n"
+"POT-Creation-Date: 2021-01-03 21:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kodi-playing/__init__.py:250
+#: kodi-playing/__init__.py:206
+msgid "Artist"
+msgstr ""
+
+#: kodi-playing/__init__.py:207
+msgid "Album"
+msgstr ""
+
+#: kodi-playing/__init__.py:208
+msgid "Duration"
+msgstr ""
+
+#: kodi-playing/__init__.py:298
 msgid "Now playing"
 msgstr ""
 
-#: kodi-playing/__init__.py:255
+#: kodi-playing/__init__.py:303
 msgid "Song by index"
 msgstr ""
 
-#: kodi-playing/__init__.py:257
+#: kodi-playing/__init__.py:305
 msgid "previous"
 msgstr ""
 
-#: kodi-playing/__init__.py:274
+#: kodi-playing/__init__.py:322
 msgid "Play/Pause"
 msgstr ""
 
-#: kodi-playing/__init__.py:280
+#: kodi-playing/__init__.py:328
 msgid "Show log"
 msgstr ""
 
-#: kodi-playing/__init__.py:284
+#: kodi-playing/__init__.py:332
 msgid "Edit settings"
 msgstr ""
 
-#: kodi-playing/__init__.py:290
+#: kodi-playing/__init__.py:338
 msgid "Quit"
 msgstr ""
 
