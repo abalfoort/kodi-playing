@@ -95,6 +95,7 @@ class KodiPlaying():
         open(self.log, 'w').close()
         # Initiate variables
         prev_title = ''
+        prev_thumbnail_path = ''
         
         while not self.check_done_event.is_set():
             # Get json data from Kodi
@@ -143,17 +144,27 @@ class KodiPlaying():
                 
                 # Retrieve thumbnail path
                 thumbnail = json['result']['item']['thumbnail']
+                thumbnail_path = ''
                 if thumbnail:
-                    # To get the full encrypted path we need to use Kodi's Files.PrepareDownload function
-                    kodi_request = {
-                        'jsonrpc': '2.0',
-                        'method': 'Files.PrepareDownload',
-                        'params': {"path": thumbnail}, "method": "Files.PrepareDownload", "id": "preparedl"}
-                    json_thumb = self.json_request(kodi_request)
-                    thumbnail_path = "http://%s:%s/%s" % (self.kodi_dict['kodi']['address'],
-                                                          self.port,
-                                                          json_thumb['result']['details']['path'])
-                
+                    try:
+                        # To get the full encrypted path we need to use Kodi's Files.PrepareDownload function
+                        kodi_request = {
+                            'jsonrpc': '2.0',
+                            'method': 'Files.PrepareDownload',
+                            'params': {"path": thumbnail}, "method": "Files.PrepareDownload", "id": "preparedl"}
+                        json_thumb = self.json_request(kodi_request)
+                        # Occasionally, this error is thrown: TypeError: string indices must be integers
+                        # In that case the previous thumbnail is used
+                        thumbnail_path = "http://%s:%s/%s" % (self.kodi_dict['kodi']['address'],
+                                                              self.port,
+                                                              json_thumb['result']['details']['path'])
+                    except:
+                        # Use the previous thumbnail
+                        thumbnail_path = prev_thumbnail_path
+                    if thumbnail_path:
+                        # Save the thumbnail_path
+                        prev_thumbnail_path = thumbnail_path
+
                 # Title and Artist information
                 if not artist:
                     # Radio plugin title: split on ' - '
