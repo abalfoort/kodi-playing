@@ -180,14 +180,18 @@ class KodiPlaying():
         """ Show song information in notification. """
         # Get last two songs from csv data
         csv_data = []
-        rows = 0
+        i = 0
         with open(self.log, 'r') as f:
             # https://docs.python.org/3/library/csv.html
             for row in reversed(list(csv.reader(f, delimiter='\t'))):
-                csv_data.append(row)
-                rows += 1
-                if rows > index + 1:
-                    break
+                i += 1
+                # We need to save the selected song
+                # and the previous song to compare thumbnails
+                if i == index or i == index + 1:
+                    csv_data.append(row)
+                    if i == index + 1:
+                        break
+
         if csv_data:
             if csv_data[0][2]:
                 album_str = "<br>Album: %s" % csv_data[0][2]
@@ -199,7 +203,7 @@ class KodiPlaying():
                 if not exists(self.tmp_thumb):
                     urlretrieve(csv_data[0][4], self.tmp_thumb)
                 elif len(csv_data) > 1:
-                    if csv_data[0][4] !=  csv_data[1][4]:
+                    if csv_data[0][4] !=  csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
 
             # Show notification
