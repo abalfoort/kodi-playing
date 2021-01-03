@@ -1,10 +1,13 @@
 [Desktop Entry]
 Name=Kodi Playing
-Name[nl]=Kodi Playing
 Comment=Notification for what is playing on Kodi
+Comment[it]=Notifica di cosa è in riproduzione su Kodi
+Comment[lt]=Pranešimas apie tai, ką atkuria Kodi
 Comment[nl]=Notificatie voor wat Kodi afspeelt
+Comment[pt]=Notificação sobre o que toca no Kodi
+Comment[pt_PT]=Notificação sobre o que toca no Kodi
 Type=Application
-Exec=kodi-playing -t
+Exec=kodi-playing
 Terminal=false
 Icon=kodi-playing
 X-GNOME-Autostart-enabled=true

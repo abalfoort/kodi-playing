@@ -3,23 +3,29 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Translators:
+# Luis Filipe Teixeira <lufilte@gmail.com>, 2021
+# Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 13:59+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2021-01-03 13:57+0100\n"
+"PO-Revision-Date: 2020-12-31 15:03+0000\n"
+"Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
+"Language-Team: Portuguese (Portugal) (https://www.transifex.com/abalfoort/"
+"teams/54212/pt_PT/)\n"
+"Language: pt_PT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: kodi-playing/__init__.py:238
 msgid "Now playing"
-msgstr ""
+msgstr "A tocar agora"
 
 #: kodi-playing/__init__.py:243
 msgid "Song by index"
@@ -31,16 +37,16 @@ msgstr ""
 
 #: kodi-playing/__init__.py:262
 msgid "Show log"
-msgstr ""
+msgstr "Mostrar Log"
 
 #: kodi-playing/__init__.py:266
 msgid "Edit settings"
-msgstr ""
+msgstr "Editar as Configurações"
 
 #: kodi-playing/__init__.py:272
 msgid "Quit"
-msgstr ""
+msgstr "Sair"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
-msgstr ""
+msgstr "Notificação sobre o que toca no Kodi"
