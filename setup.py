@@ -9,7 +9,7 @@ import pathlib, os
 # Set these variables
 PACKAGE_NAME='kodi-playing'
 PACKAGE_DIR=PACKAGE_NAME
-PACKAGE_DATA={PACKAGE_NAME: ['']}
+PACKAGE_DATA={PACKAGE_NAME: ['*.ini', '*.desktop', '*.svg']}
 SCRIPTS=['scripts/kodi-playing']
 DATA_FILES=[
     ('share/man/man1', ['man/kodi-playing.1']),
