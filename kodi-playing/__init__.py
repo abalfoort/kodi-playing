@@ -232,6 +232,14 @@ class KodiPlaying():
             'id': 'AudioGetItem'}
         return self.json_request(kodi_request)
     
+    def play_pause_song(self):
+        """ Toggle play/pause. """
+        kodi_request = {
+            'jsonrpc': '2.0',
+            'method': 'Player.PlayPause',
+            'params': { "playerid": 0 }, "id": 1}
+        self.json_request(kodi_request)
+    
     # ===============================================
     # System Tray Icon
     # ===============================================
@@ -263,6 +271,12 @@ class KodiPlaying():
         
         menu.append(Gtk.SeparatorMenuItem())
         
+        item_pp = Gtk.MenuItem.new_with_label(_("Play/Pause"))
+        item_pp.connect('activate', self.play_pause)
+        menu.append(item_pp)
+        
+        menu.append(Gtk.SeparatorMenuItem())
+        
         item_log = Gtk.MenuItem.new_with_label(_("Show log"))
         item_log.connect('activate', self.show_log)
         menu.append(item_log)
@@ -290,6 +304,10 @@ class KodiPlaying():
     def show_index(self, widget, index):
         """ Menu function to call show_song_info with index. """
         self.show_song_info(index)
+        
+    def play_pause(self, widget=None):
+        """ Menu function to call play_pause_song. """
+        self.play_pause_song()
     
     def show_log(self, widget=None):
         """ Open kodi-playing.csv in default editor. """

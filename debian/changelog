@@ -7,6 +7,7 @@ kodi-playing (1.1.0) testing; urgency=low
   * Grey indicator when no Kodi server is found
   * Add song by index to menu
   * Add middle mouse click to show currently playing
+  * Add play/pause song
 
  -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Sat, 02 Jan 2021 15:38:22 +0100
 
