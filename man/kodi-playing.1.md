@@ -11,39 +11,20 @@ date: December 2020
 
 kodi-playing - Show a notification when your Kodi server is playing a new song.
 
-# SYNOPSIS
-
-**kodi-playing** \[OPTION]
-
 # DESCRIPTION
 
--c
-:   Show current song
-
--i [#]
-:   Show song by number: 1=last, 2=previous,etc.
-
--h
-:   Help screen
-
--l
-:   Show log file
-
--q
-:   Quit kodi-playing
-
--s
-:   Edit settings.conf
-
--t
-:   Start tray icon
-
 The indicator sits in the system tray and shows what Kodi is playing.
-The menu represents the options the script provides (see above).
+
+* Changes in settings will be aplied the next time you start kodi-playing.
+* Log file is a tab-delimited csv file and is recreated each time kodi-playing is started.
+* Middle mouse-click on icon: show currently playing.
+* Song by index: 2 = previous song, 3 = song before that, etc.
+
+
 
 # FILES
 
-~/.kodi-playing/settings.conf
+~/.kodi-playing/settings.ini
 :   Configuration file.
 
 ~/.kodi-playing/kodi-playing.csv

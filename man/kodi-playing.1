@@ -6,37 +6,21 @@
 .PP
 kodi-playing - Show a notification when your Kodi server is playing a
 new song.
-.SH SYNOPSIS
-.PP
-\f[B]kodi-playing\f[R] [OPTION]
 .SH DESCRIPTION
-.TP
--c
-Show current song
-.TP
--i [#]
-Show song by number: 1=last, 2=previous,etc.
-.TP
--h
-Help screen
-.TP
--l
-Show log file
-.TP
--q
-Quit kodi-playing
-.TP
--s
-Edit settings.conf
-.TP
--t
-Start tray icon
 .PP
 The indicator sits in the system tray and shows what Kodi is playing.
-The menu represents the options the script provides (see above).
+.IP \[bu] 2
+Changes in settings will be aplied the next time you start kodi-playing.
+.IP \[bu] 2
+Log file is a tab-delimited csv file and is recreated each time
+kodi-playing is started.
+.IP \[bu] 2
+Middle mouse-click on icon: show currently playing.
+.IP \[bu] 2
+Song by index: 2 = previous song, 3 = song before that, etc.
 .SH FILES
 .TP
-\[ti]/.kodi-playing/settings.conf
+\[ti]/.kodi-playing/settings.ini
 Configuration file.
 .TP
 \[ti]/.kodi-playing/kodi-playing.csv
