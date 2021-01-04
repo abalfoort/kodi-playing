@@ -53,6 +53,7 @@ class KodiPlaying():
         self.tmp_thumb = "/tmp/kodi-playing.png"
         self.autostart_dt = join(self.home, ".config/autostart/kodi-playing-autostart.desktop")
         self.is_connected = False
+        self.prev_is_connected = False
         
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
@@ -107,13 +108,20 @@ class KodiPlaying():
                 json = self.get_song()
                 if not json:
                     self.is_connected = False
+                    if self.prev_is_connected:
+                        # Lost connection: rebuild menu
+                        self.indicator.set_menu(self.build_menu())
+                        self.prev_is_connected = False
                     self.indicator.set_icon_full(join(self.scriptdir, 'kodi-playing-grey.svg'), '')
                     self.check_done_event.wait(self.wait)
             # Go not any further if json is empty
             if not json:
                 break
-            # Connected: show normal icon
+            # Connected: build menu and show normal icon
             self.is_connected = True
+            if not self.prev_is_connected:
+                self.indicator.set_menu(self.build_menu())
+                self.prev_is_connected = True
             self.indicator.set_icon_full('kodi-playing', '')
 
             # Reset variables
@@ -205,7 +213,7 @@ class KodiPlaying():
         if csv_data:
             artist_title = _("Artist")
             album_title = _("Album")
-            duration_title = _("Duration")
+            duration_title = _("Time")
             album_str = ''
             duration_str = ''
             
@@ -229,8 +237,6 @@ class KodiPlaying():
                 elif len(csv_data) > 1:
                     if csv_data[0][4] != csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
-                        
-            
 
             # Show notification
             Notify.Notification.new(csv_data[0][0], 
@@ -239,7 +245,10 @@ class KodiPlaying():
             print(("%s, %s: %s, %s: %s, %s: %s" % (csv_data[0][0], artist_title, csv_data[0][1], album_title, csv_data[0][2], duration_title, csv_data[0][3])))
 
     def json_request(self, kodi_request):
-        """ Return json data from Kodi. """
+        """ 
+        Return json data from Kodi. 
+        https://kodi.wiki/view/JSON-RPC_API/v10
+        """
         try:
             request = Request("http://%s:%s/jsonrpc" % (self.kodi_dict['kodi']['address'], self.port), 
                               bytes(json.dumps(kodi_request), encoding='utf8'), 
@@ -260,6 +269,8 @@ class KodiPlaying():
     
     def play_pause_song(self):
         """ Toggle play/pause. """
+        if not self.is_connected:
+            return
         kodi_request = {
             'jsonrpc': '2.0',
             'method': 'Player.PlayPause',
@@ -269,24 +280,46 @@ class KodiPlaying():
         
     def is_idle(self, seconds=60):
         """ Check if Kodi has been idle for x seconds. """
+        if not self.is_connected:
+            return True
         kodi_request = {
             'jsonrpc': '2.0',
             'method': 'XBMC.GetInfoBooleans',
             'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] },
             "id": 1}
         json = self.json_request(kodi_request)
-        return json['result']["System.IdleTime('{}')".format(seconds)]
+        if json:
+            return json['result']["System.IdleTime('{}')".format(seconds)]
+        return False
     
     def get_song_time_played(self):
         """ Get played seconds of currently playing song. """
+        if not self.is_connected:
+            return 0
         kodi_request = {
             'jsonrpc': '2.0',
             'method': 'Player.GetProperties',
             'params': { 'playerid': 0, 'properties': ['percentage', 'totaltime'] },
             'id': 1}
         json = self.json_request(kodi_request)
-        duration = (int(json['result']['totaltime']['minutes']) * 60) + int(json['result']['totaltime']['seconds'])
-        return duration * (float(json['result']['percentage']) / 100)
+        if json:
+            duration = (int(json['result']['totaltime']['minutes']) * 60) + int(json['result']['totaltime']['seconds'])
+            return duration * (float(json['result']['percentage']) / 100)
+        return 0
+    
+    def is_playing(self):
+        """ Get played seconds of currently playing song. """
+        if not self.is_connected:
+            return False
+        kodi_request = {
+            'jsonrpc': '2.0',
+            'method': 'Player.GetProperties',
+            'params': { 'playerid': 0, 'properties': ['speed'] },
+            'id': 1}
+        json = self.json_request(kodi_request)
+        if json:
+            return True if int(json['result']['speed']) == 1 else False
+        return False
     
     # ===============================================
     # System Tray Icon
@@ -295,7 +328,7 @@ class KodiPlaying():
         """ Build menu for the tray icon. """
         menu = Gtk.Menu()
         
-        self.item_now_playing = Gtk.MenuItem.new_with_label(_("Now playing"))
+        self.item_now_playing = Gtk.MenuItem.new_with_label(_("Current song"))
         self.item_now_playing.connect('activate', self.show_current)
         menu.append(self.item_now_playing)
         
@@ -319,7 +352,10 @@ class KodiPlaying():
         
         menu.append(Gtk.SeparatorMenuItem())
         
-        item_pp = Gtk.MenuItem.new_with_label(_("Play/Pause"))
+        if self.is_playing():
+            item_pp = Gtk.MenuItem.new_with_label(" ▯▯")
+        else:
+            item_pp = Gtk.MenuItem.new_with_label(" ▷")
         item_pp.connect('activate', self.play_pause)
         menu.append(item_pp)
         
@@ -340,7 +376,16 @@ class KodiPlaying():
         menu.append(item_quit)
         
         menu.show_all()
-                
+        
+        if self.is_connected:
+            self.item_now_playing.set_sensitive(True)
+            item_index.set_sensitive(True)
+            item_pp.set_sensitive(True)
+        else:
+            self.item_now_playing.set_sensitive(False)
+            item_index.set_sensitive(False)
+            item_pp.set_sensitive(False)
+
         return menu
     
     def show_current(self, widget=None):
@@ -356,6 +401,7 @@ class KodiPlaying():
     def play_pause(self, widget=None):
         """ Menu function to call play_pause_song. """
         self.play_pause_song()
+        self.indicator.set_menu(self.build_menu())
     
     def show_log(self, widget=None):
         """ Open kodi-playing.csv in default editor. """

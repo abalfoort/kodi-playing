@@ -9,6 +9,7 @@ kodi-playing (1.1.0) testing; urgency=low
   * Add middle mouse click to show currently playing
   * Add play/pause song
   * Calculate played time of song
+  * Disable/enable part of menu on Kodi connection
 
  -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Sat, 02 Jan 2021 15:38:22 +0100
 
