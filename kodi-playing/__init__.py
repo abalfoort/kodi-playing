@@ -24,6 +24,7 @@ import subprocess
 import signal
 import datetime
 import json
+import socket
 from shutil import copyfile
 from time import gmtime, strftime, sleep
 from pathlib import Path
@@ -44,27 +45,40 @@ gettext.textdomain(APPINDICATOR_ID)
 
 class KodiPlaying():
     def __init__(self):
-        # Paths
+        # Initiate variables
         self.scriptdir = abspath(dirname(__file__))
         self.home = str(Path.home())
-        self.local_dir = join(self.home, ".kodi-playing")
-        self.conf = join(self.local_dir, "settings.ini")
-        self.log = join(self.local_dir, "kodi-playing.csv")
-        self.tmp_thumb = "/tmp/kodi-playing.png"
-        self.autostart_dt = join(self.home, ".config/autostart/kodi-playing-autostart.desktop")
+        self.local_dir = join(self.home, '.kodi-playing')
+        self.conf = join(self.local_dir, 'settings.ini')
+        self.log = join(self.local_dir, 'kodi-playing.csv')
+        self.tmp_thumb = '/tmp/kodi-playing.png'
+        self.autostart_dt = join(self.home, '.config/autostart/kodi-playing-autostart.desktop')
         self.is_connected = False
         self.prev_is_connected = False
+        self.is_playing = False
+        self.prev_is_playing = False
+        self.grey_icon = join(self.scriptdir, 'kodi-playing-grey.svg')
+        self.config = ConfigParser()
         
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
         # Create conf file if it does not already exist
         if not exists(self.conf):
-            copyfile(join(self.scriptdir, 'settings.ini'), self.conf)
+            # Search for kodi on the network
+            kodi = self.search_kodi()
+            cont = ''
+            # Get default settings
+            with open(join(self.scriptdir, 'settings.ini'), 'r') as f:
+                cont = f.read()
+            if kodi:
+                cont = cont.replace('localhost', kodi)
+            # Save settings.ini
+            with open(self.conf, 'w') as f:
+                f.write(cont)
             # Let the user configure the settings and block the process until done
             self.show_settings()
-
+            
         # Read the ini into a dictionary
-        self.config = ConfigParser()
         self.read_config()
 
         # Check if configured for autostart
@@ -79,14 +93,14 @@ class KodiPlaying():
         self.check_done_event = Event()
         # Create global indicator object
         # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
-        self.indicator = AppIndicator3.Indicator.new(APPINDICATOR_ID, 'kodi-playing', AppIndicator3.IndicatorCategory.OTHER)
+        self.indicator = AppIndicator3.Indicator.new(APPINDICATOR_ID, self.grey_icon, AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.build_menu())
         self.indicator.set_secondary_activate_target(self.item_now_playing)
         # Init notifier
         # https://lazka.github.io/pgi-docs/#Notify-0.7
-        Notify.init("%s:%s" % (self.kodi_dict['kodi']['address'], self.port))
+        Notify.init("%s:%s" % (self.address, self.port))
         # Start thread to check for connection changes
         Thread(target=self.run_check).start()
 
@@ -100,29 +114,37 @@ class KodiPlaying():
         
         while not self.check_done_event.is_set():
             # Get json data from Kodi
-            json = ''
-            while not json:
+            js = ''
+            while not js:
                 if self.check_done_event.is_set():
                     break
                 # Kodi not running - keep checking
-                json = self.get_song()
-                if not json:
+                js = self.get_song()
+                if not js:
                     self.is_connected = False
                     if self.prev_is_connected:
                         # Lost connection: rebuild menu
-                        self.indicator.set_menu(self.build_menu())
                         self.prev_is_connected = False
-                    self.indicator.set_icon_full(join(self.scriptdir, 'kodi-playing-grey.svg'), '')
-                    self.check_done_event.wait(self.wait)
+                        self.indicator.set_menu(self.build_menu())
+                        self.indicator.set_icon_full(self.grey_icon, '')
+                        self.check_done_event.wait(self.wait)
+            
             # Go not any further if json is empty
-            if not json:
+            if not js:
                 break
+            
             # Connected: build menu and show normal icon
             self.is_connected = True
             if not self.prev_is_connected:
-                self.indicator.set_menu(self.build_menu())
                 self.prev_is_connected = True
-            self.indicator.set_icon_full('kodi-playing', '')
+                self.indicator.set_menu(self.build_menu())
+                self.indicator.set_icon_full('kodi-playing', '')
+            
+            # Check if there is something playing
+            self.set_is_playing()
+            if self.is_playing != self.prev_is_playing:
+                self.prev_is_playing = self.is_playing
+                self.indicator.set_menu(self.build_menu())
 
             # Reset variables
             title = ''
@@ -131,7 +153,16 @@ class KodiPlaying():
             duration = ''
 
             # Retrieve the title first
-            title = json['result']['item']['title']
+            title = js['result']['item']['title']
+            artist = ' '.join(js['result']['item']['artist']).replace('"', '')
+            
+            # Radio plugin title: split on ' - '
+            # https://kodi.wiki/view/Add-on:Radio
+            if not artist:
+                arr = title.split(' - ')
+                if len(arr) == 2:
+                    artist = arr[0]
+                    title = arr[1]
             
             # Check if we need to skip this title
             skip = False
@@ -139,44 +170,23 @@ class KodiPlaying():
                 if pattern in title:
                     skip = True
                     break
-            
+
             if not skip and title and title !=  prev_title:
-                # .artist returns an array: use jq [] and bash () to handle it as an array in bash
-                artist = ' '.join(json['result']['item']['artist']).replace('"', '')
-                album = json['result']['item']['album'].replace('"', '')
-                duration = json['result']['item']['duration']
+                # Get album and duration
+                album = js['result']['item']['album'].replace('"', '')
+                duration = js['result']['item']['duration']
                 
                 # Retrieve thumbnail path
-                thumbnail = json['result']['item']['thumbnail']
+                thumbnail = js['result']['item']['thumbnail']
                 thumbnail_path = ''
                 if thumbnail:
-                    try:
-                        # To get the full encrypted path we need to use Kodi's Files.PrepareDownload function
-                        kodi_request = {
-                            'jsonrpc': '2.0',
-                            'method': 'Files.PrepareDownload',
-                            'params': {"path": thumbnail}, "method": "Files.PrepareDownload", "id": "preparedl"}
-                        json_thumb = self.json_request(kodi_request)
-                        # Occasionally, this error is thrown: TypeError: string indices must be integers
-                        # In that case the previous thumbnail is used
-                        thumbnail_path = "http://%s:%s/%s" % (self.kodi_dict['kodi']['address'],
-                                                              self.port,
-                                                              json_thumb['result']['details']['path'])
-                    except:
-                        # Use the previous thumbnail
-                        thumbnail_path = prev_thumbnail_path
+                    thumbnail_path = self.get_thumbnail_path(thumbnail)
                     if thumbnail_path:
                         # Save the thumbnail_path
                         prev_thumbnail_path = thumbnail_path
+                    else:
+                        thumbnail_path = prev_thumbnail_path
 
-                # Title and Artist information
-                if not artist:
-                    # Radio plugin title: split on ' - '
-                    arr = title.split(' - ')
-                    if len(arr) == 2:
-                        artist = arr[0]
-                        title = arr[1]
-                
                 if title !=  artist:
                     # Logging
                     with open(self.log, 'a') as f:
@@ -211,15 +221,15 @@ class KodiPlaying():
                         break
 
         if csv_data:
-            artist_title = _("Artist")
-            album_title = _("Album")
-            duration_title = _("Time")
+            artist_title = _('Artist')
+            album_title = _('Album')
+            duration_title = _('Time')
             album_str = ''
             duration_str = ''
             
             if csv_data[0][2]:
                 album_str = "<br>%s: %s" % (album_title, csv_data[0][2])
-            if csv_data[0][3]:
+            if self.str_int(csv_data[0][3], 0) > 0:
                 # Convert to "00:00" notation
                 duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
                 played = duration
@@ -244,13 +254,13 @@ class KodiPlaying():
                                     self.tmp_thumb).show()
             print(("%s, %s: %s, %s: %s, %s: %s" % (csv_data[0][0], artist_title, csv_data[0][1], album_title, csv_data[0][2], duration_title, csv_data[0][3])))
 
-    def json_request(self, kodi_request):
+    def json_request(self, kodi_request, address, port):
         """ 
         Return json data from Kodi. 
         https://kodi.wiki/view/JSON-RPC_API/v10
         """
         try:
-            request = Request("http://%s:%s/jsonrpc" % (self.kodi_dict['kodi']['address'], self.port), 
+            request = Request("http://%s:%s/jsonrpc" % (address, port), 
                               bytes(json.dumps(kodi_request), encoding='utf8'), 
                               {'Content-Type': 'application/json'})
             with closing(urlopen(request)) as response:
@@ -260,66 +270,110 @@ class KodiPlaying():
 
     def get_song(self):
         """ Get song data (json) from Kodi. """
-        kodi_request = {
-            'jsonrpc': '2.0',
-            'method': 'Player.GetItem',
-            'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail'], 'playerid': 0 },
-            'id': 'AudioGetItem'}
-        return self.json_request(kodi_request)
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.GetItem',
+                        'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail'], 'playerid': 0 },
+                        'id': 'AudioGetItem'}
+        js = self.json_request(kodi_request, self.address, self.port)
+        try:
+            if js['result']['item']['title']:
+                return js
+            else:
+                return ''
+        except:
+            return ''
+            
+    
+    def get_thumbnail_path(self, thumbnail):
+        try:
+            # To get the full encrypted path we need to use Kodi's Files.PrepareDownload function
+            kodi_request = {'jsonrpc': '2.0',
+                            'method': 'Files.PrepareDownload',
+                            'params': {'path': thumbnail}, 'method': 'Files.PrepareDownload', 'id': 'preparedl'}
+            js_thumb = self.json_request(kodi_request, self.address, self.port)
+            # Occasionally, this error is thrown: TypeError: string indices must be integers
+            # In that case the previous thumbnail is used
+            return "http://%s:%s/%s" % (self.kodi_dict['kodi']['address'],
+                                        self.port,
+                                        js_thumb['result']['details']['path'])
+        except:
+            return ''
     
     def play_pause_song(self):
         """ Toggle play/pause. """
         if not self.is_connected:
             return
-        kodi_request = {
-            'jsonrpc': '2.0',
-            'method': 'Player.PlayPause',
-            'params': { "playerid": 0 },
-            "id": 1}
-        self.json_request(kodi_request)
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.PlayPause',
+                        'params': { 'playerid': 0 },
+                        'id': 1}
+        self.json_request(kodi_request, self.address, self.port)
         
     def is_idle(self, seconds=60):
         """ Check if Kodi has been idle for x seconds. """
         if not self.is_connected:
             return True
-        kodi_request = {
-            'jsonrpc': '2.0',
-            'method': 'XBMC.GetInfoBooleans',
-            'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] },
-            "id": 1}
-        json = self.json_request(kodi_request)
-        if json:
-            return json['result']["System.IdleTime('{}')".format(seconds)]
-        return False
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'XBMC.GetInfoBooleans',
+                        'params': { "booleans": ["System.IdleTime('{}')".format(seconds)] },
+                        'id': 1}
+        js = self.json_request(kodi_request, self.address, self.port)
+        try:
+            return js['result']["System.IdleTime('{}')".format(seconds)]
+        except:
+            return False
     
     def get_song_time_played(self):
         """ Get played seconds of currently playing song. """
         if not self.is_connected:
             return 0
-        kodi_request = {
-            'jsonrpc': '2.0',
-            'method': 'Player.GetProperties',
-            'params': { 'playerid': 0, 'properties': ['percentage', 'totaltime'] },
-            'id': 1}
-        json = self.json_request(kodi_request)
-        if json:
-            duration = (int(json['result']['totaltime']['minutes']) * 60) + int(json['result']['totaltime']['seconds'])
-            return duration * (float(json['result']['percentage']) / 100)
-        return 0
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.GetProperties',
+                        'params': { 'playerid': 0, 'properties': ['percentage', 'totaltime'] },
+                        'id': 1}
+        js = self.json_request(kodi_request, self.address, self.port)
+        try:
+            duration = (int(js['result']['totaltime']['minutes']) * 60) + int(js['result']['totaltime']['seconds'])
+            return duration * (float(js['result']['percentage']) / 100)
+        except:
+            return 0
     
-    def is_playing(self):
+    def set_is_playing(self):
         """ Get played seconds of currently playing song. """
         if not self.is_connected:
-            return False
-        kodi_request = {
-            'jsonrpc': '2.0',
-            'method': 'Player.GetProperties',
-            'params': { 'playerid': 0, 'properties': ['speed'] },
-            'id': 1}
-        json = self.json_request(kodi_request)
-        if json:
-            return True if int(json['result']['speed']) == 1 else False
-        return False
+            self.is_playing = False
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.GetProperties',
+                        'params': { 'playerid': 0, 'properties': ['speed'] },
+                        'id': 1}
+        js = self.json_request(kodi_request, self.address, self.port)
+        try:
+            self.is_playing = True if int(js['result']['speed']) == 1 else False
+        except:
+            self.is_playing = False
+            
+    def search_kodi(self):
+        port = 8080
+        # Get list of network IPs
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.GetActivePlayers',
+                        'id': 1}
+        ips = subprocess.check_output("arp -n | awk '{if(NR>1)print $1}'", shell=True).decode('utf-8').strip().split('\n')
+        for ip in ips:
+            if ip:
+                # First check if port is open
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(1)
+                #sock.setblocking(False)
+                result = sock.connect_ex((ip, port))
+                sock.close()
+                if result == 0:
+                    # Now check if json is available
+                    js = self.json_request(kodi_request, ip, port)
+                    if js:
+                        return ip
+                        break
+        return ''
     
     # ===============================================
     # System Tray Icon
@@ -352,7 +406,7 @@ class KodiPlaying():
         
         menu.append(Gtk.SeparatorMenuItem())
         
-        if self.is_playing():
+        if self.is_playing:
             item_pp = Gtk.MenuItem.new_with_label(" ▯▯")
         else:
             item_pp = Gtk.MenuItem.new_with_label(" ▷")
@@ -409,17 +463,14 @@ class KodiPlaying():
     
     def show_settings(self, widget=None):
         """ Open settings.ini in default editor. """
-        subprocess.call(['xdg-open', self.conf])
-        # Get the pid of opened file
-        # Posted on stackoverflow: https://stackoverflow.com/questions/65544182/python3-linux-open-text-file-in-default-editor-and-wait-until-done
-        pid = subprocess.check_output("ps -o pid,cmd -e | grep %s | head -n 1 | awk '{print $1}'" % self.conf, shell=True).decode('utf-8')
-        while self.check_pid(pid):
-            # Read settings.ini
+        if exists(self.conf):
+            subprocess.call(['xdg-open', self.conf])
+            # Get the pid of opened file
+            # Posted on stackoverflow: https://stackoverflow.com/questions/65544182/python3-linux-open-text-file-in-default-editor-and-wait-until-done
+            pid = subprocess.check_output("ps -o pid,cmd -e | grep %s | head -n 1 | awk '{print $1}'" % self.conf, shell=True).decode('utf-8')
+            while self.check_pid(pid):
+                sleep(1)
             self.read_config()
-            # Repaint GUI, or the update won't show
-            while Gtk.events_pending():
-                Gtk.main_iteration()
-            sleep(1)
         
     # ===============================================
     # General functions
@@ -436,6 +487,7 @@ class KodiPlaying():
         self.config.read(self.conf)
         self.kodi_dict = {s:dict(self.config.items(s)) for s in self.config.sections()}
         # Save port and default to 8080
+        self.address = self.kodi_dict['kodi']['address']
         self.port = self.str_int(self.kodi_dict['kodi']['port'], 8080)
         self.wait = self.str_int(self.kodi_dict['kodi']['wait'], 10)
         

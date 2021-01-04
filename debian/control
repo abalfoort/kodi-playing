@@ -20,5 +20,6 @@ Depends: ${misc:Depends}, ${python3:Depends}
   , python3-simplejson
   , python3-iniparse
   , xdg-utils
+  , net-tools
 Description: Show Kodi notification
  Show a notification when your Kodi server is playing a new song.
