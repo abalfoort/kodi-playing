@@ -467,7 +467,7 @@ class KodiPlaying():
             subprocess.call(['xdg-open', self.conf])
             # Get the pid of opened file
             # Posted on stackoverflow: https://stackoverflow.com/questions/65544182/python3-linux-open-text-file-in-default-editor-and-wait-until-done
-            pid = subprocess.check_output("ps -o pid,cmd -e | grep %s | head -n 1 | awk '{print $1}'" % self.conf, shell=True).decode('utf-8')
+            pid = subprocess.check_output("pgrep -f %s | head -n 1" % self.conf, shell=True).decode('utf-8')
             while self.check_pid(pid):
                 sleep(1)
             self.read_config()
