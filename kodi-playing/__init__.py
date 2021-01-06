@@ -97,7 +97,6 @@ class KodiPlaying():
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.build_menu())
-        self.indicator.set_secondary_activate_target(self.item_now_playing)
         # Init notifier
         # https://lazka.github.io/pgi-docs/#Notify-0.7
         Notify.init("%s:%s" % (self.address, self.port))
@@ -170,6 +169,8 @@ class KodiPlaying():
                 if pattern in title:
                     skip = True
                     break
+                
+            #print("title: %s, artist: %s" % (title, artist))
 
             if not skip and title and title !=  prev_title:
                 # Get album and duration
@@ -187,7 +188,7 @@ class KodiPlaying():
                     else:
                         thumbnail_path = prev_thumbnail_path
 
-                if title !=  artist:
+                if title != artist:
                     # Logging
                     with open(self.log, 'a') as f:
                         f.write('{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path))
@@ -290,24 +291,26 @@ class KodiPlaying():
             kodi_request = {'jsonrpc': '2.0',
                             'method': 'Files.PrepareDownload',
                             'params': {'path': thumbnail}, 'method': 'Files.PrepareDownload', 'id': 'preparedl'}
-            js_thumb = self.json_request(kodi_request, self.address, self.port)
+            js = self.json_request(kodi_request, self.address, self.port)
             # Occasionally, this error is thrown: TypeError: string indices must be integers
             # In that case the previous thumbnail is used
             return "http://%s:%s/%s" % (self.kodi_dict['kodi']['address'],
                                         self.port,
-                                        js_thumb['result']['details']['path'])
+                                        js['result']['details']['path'])
         except:
             return ''
     
     def play_pause_song(self):
         """ Toggle play/pause. """
         if not self.is_connected:
+            self.is_playing = False
             return
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.PlayPause',
                         'params': { 'playerid': 0 },
                         'id': 1}
         self.json_request(kodi_request, self.address, self.port)
+        self.is_playing = not self.is_playing
         
     def is_idle(self, seconds=60):
         """ Check if Kodi has been idle for x seconds. """
