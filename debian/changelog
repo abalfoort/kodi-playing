@@ -1,3 +1,10 @@
+kodi-playing (1.1.2) stable; urgency=low
+
+  * Add show_notifications to settings.ini: notification timout
+  * Catch unexpected errors and write to error.log
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Fri, 08 Jan 2021 15:12:26 +0100
+
 kodi-playing (1.1.1) testing; urgency=low
 
   * Find Kodi server on initial run.

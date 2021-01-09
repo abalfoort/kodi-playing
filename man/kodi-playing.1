@@ -15,9 +15,28 @@ Changes in settings will be aplied the next time you start kodi-playing.
 Log file is a tab-delimited csv file and is recreated each time
 kodi-playing is started.
 .IP \[bu] 2
-Middle mouse-click on icon: show currently playing.
-.IP \[bu] 2
 Song by index: 2 = previous song, 3 = song before that, etc.
+.SH SETTINGS
+.PP
+These settings can be configured in the settings.ini file (see below):
+.TP
+address = localhost
+Kodi name/IP address
+.TP
+port = 8080
+Kodi port (default: 8080)
+.TP
+wait = 10
+Wait nr seconds for next Kodi check (default: 10)
+.TP
+show_notification = 10
+Show notification nr seconds (default: 10, disable: 0)
+.TP
+skip_titles = NPO,KINK
+Skip title with one of these patterns (comma separated)
+.TP
+autostart = 0
+Autostart on login (0: no, 1: yes, default: 0)
 .SH FILES
 .TP
 \[ti]/.kodi-playing/settings.ini
@@ -25,6 +44,9 @@ Configuration file.
 .TP
 \[ti]/.kodi-playing/kodi-playing.csv
 Kodi data of kodi-playing session.
+.TP
+\[ti]/.kodi-playing/error.log
+In case of an unexpected error this file contains the traceback.
 .SH Author
 .PP
 Written by Arjen Balfoort

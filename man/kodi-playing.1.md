@@ -17,9 +17,29 @@ The indicator sits in the system tray and shows what Kodi is playing.
 
 * Changes in settings will be aplied the next time you start kodi-playing.
 * Log file is a tab-delimited csv file and is recreated each time kodi-playing is started.
-* Middle mouse-click on icon: show currently playing.
 * Song by index: 2 = previous song, 3 = song before that, etc.
 
+# SETTINGS
+
+These settings can be configured in the settings.ini file (see below):
+
+address = localhost
+:   Kodi name/IP address
+
+port = 8080
+:   Kodi port (default: 8080)
+
+wait = 10
+:   Wait nr seconds for next Kodi check (default: 10)
+
+show_notification = 10
+:   Show notification nr seconds (default: 10, disable: 0)
+
+skip_titles = NPO,KINK
+:   Skip title with one of these patterns (comma separated)
+
+autostart = 0
+:   Autostart on login (0: no, 1: yes, default: 0)
 
 
 # FILES
@@ -29,6 +49,9 @@ The indicator sits in the system tray and shows what Kodi is playing.
 
 ~/.kodi-playing/kodi-playing.csv
 :   Kodi data of kodi-playing session.
+
+~/.kodi-playing/error.log
+:   In case of an unexpected error this file contains the traceback.
 
 # Author
 

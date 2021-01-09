@@ -6,16 +6,16 @@ if [ -z "$PYTHON" ]; then
   exit 1
 fi
 
+mkdir -p "$HOME/.kodi-playing"
+
 DEBUG=false; case "$@" in -d|--debug) DEBUG=true; esac
 
-if ! pgrep -u $USER -f python3.*kodi-playing &>/dev/null; then
-    # Use file as tty output
-    # Launch with all passed arguments (future reserved)
-    if $DEBUG; then
-        # Use importlib to import a module with a hyphen in its name
-        $PYTHON -Wd -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main()"
-    else
-        $PYTHON -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main()" &
-        echo "You can now close the terminal."
-    fi
+# Use file as tty output
+# Launch with all passed arguments (future reserved)
+if $DEBUG; then
+    # Use importlib to import a module with a hyphen in its name
+    $PYTHON -Wd -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main()"
+else
+    $PYTHON -OO -c "import importlib; kp = importlib.import_module('kodi-playing'); kp.main()" &
+    echo "You can now close the terminal."
 fi
