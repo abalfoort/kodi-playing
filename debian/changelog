@@ -1,3 +1,10 @@
+kodi-playing (1.1.3) stable; urgency=low
+
+  * New open_text_file method to open text file in default editor
+  * Updated translation: pt, pt_PT
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Wed, 13 Jan 2021 10:24:38 +0100
+
 kodi-playing (1.1.2) stable; urgency=low
 
   * Add show_notifications to settings.ini: notification timout

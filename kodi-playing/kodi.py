@@ -32,6 +32,7 @@ from urllib.request import Request, urlopen, urlretrieve
 from contextlib import closing
 from os.path import abspath, dirname, join, exists
 from threading import Event, Thread
+from .utils import open_text_file, str_int
 
 
 APPINDICATOR_ID = 'kodi-playing'
@@ -81,7 +82,7 @@ class KodiPlaying():
         self.read_config()
 
         # Check if configured for autostart
-        if self.str_int(self.kodi_dict['kodi']['autostart'], 0) == 1:
+        if str_int(self.kodi_dict['kodi']['autostart'], 0) == 1:
             if not exists(self.autostart_dt):
                 copyfile(join(self.scriptdir, 'kodi-playing-autostart.desktop'), self.autostart_dt)
         else:
@@ -230,7 +231,7 @@ class KodiPlaying():
             
             if csv_data[0][2]:
                 album_str = "<br>%s: %s" % (album_title, csv_data[0][2])
-            if self.str_int(csv_data[0][3], 0) > 0:
+            if str_int(csv_data[0][3], 0) > 0:
                 # Convert to "00:00" notation
                 duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
                 played = duration
@@ -471,12 +472,7 @@ class KodiPlaying():
     def show_settings(self, widget=None):
         """ Open settings.ini in default editor. """
         if exists(self.conf):
-            subprocess.call(['xdg-open', self.conf])
-            # Get the pid of opened file
-            # Posted on stackoverflow: https://stackoverflow.com/questions/65544182/python3-linux-open-text-file-in-default-editor-and-wait-until-done
-            pid = subprocess.check_output("pgrep -f %s | head -n 1" % self.conf, shell=True).decode('utf-8')
-            while self.check_pid(pid):
-                sleep(1)
+            open_text_file(self.conf)
             self.read_config()
         
     # ===============================================
@@ -495,22 +491,6 @@ class KodiPlaying():
         self.kodi_dict = {s:dict(self.config.items(s)) for s in self.config.sections()}
         # Save port and default to 8080
         self.address = self.kodi_dict['kodi']['address']
-        self.port = self.str_int(self.kodi_dict['kodi']['port'], 8080)
-        self.wait = self.str_int(self.kodi_dict['kodi']['wait'], 10)
-        self.show_notification = self.str_int(self.kodi_dict['kodi']['show_notification'], 10)
-        
-    def str_int(self, nr_str, default_int):
-        """ Convert string to integer or return default value. """
-        try:
-            return int(nr_str)
-        except ValueError:
-            return default_int
-        
-    def check_pid(self, pid):        
-        """ Check For the existence of a unix pid. """
-        try:
-            os.kill(int(pid), 0)
-        except OSError:
-            return False
-        else:
-            return True
+        self.port = str_int(self.kodi_dict['kodi']['port'], 8080)
+        self.wait = str_int(self.kodi_dict['kodi']['wait'], 10)
+        self.show_notification = str_int(self.kodi_dict['kodi']['show_notification'], 10)
