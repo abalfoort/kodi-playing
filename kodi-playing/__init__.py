@@ -9,8 +9,12 @@ import sys
 import subprocess
 import getpass
 import signal
-from .kodi import KodiPlaying
-from .dialogs import ErrorDialog
+try:
+    from .kodi import KodiPlaying
+    from .dialogs import ErrorDialog
+except:
+    from kodi import KodiPlaying
+    from dialogs import ErrorDialog
 
 def uncaught_excepthook(*args):
     sys.__excepthook__(*args)
