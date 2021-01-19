@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-09 13:12+0100\n"
+"POT-Creation-Date: 2021-01-19 19:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kodi-playing/kodi.py:224
+#: kodi-playing/kodi.py:123
+msgid "Unable to connect to:"
+msgstr ""
+
+#: kodi-playing/kodi.py:234
 msgid "Artist"
 msgstr ""
 
-#: kodi-playing/kodi.py:225
+#: kodi-playing/kodi.py:235
 msgid "Album"
 msgstr ""
 
-#: kodi-playing/kodi.py:226
+#: kodi-playing/kodi.py:236
 msgid "Time"
 msgstr ""
 
-#: kodi-playing/kodi.py:392
+#: kodi-playing/kodi.py:432
 msgid "Current song"
 msgstr ""
 
-#: kodi-playing/kodi.py:397
+#: kodi-playing/kodi.py:437
 msgid "Song by index"
 msgstr ""
 
-#: kodi-playing/kodi.py:399
+#: kodi-playing/kodi.py:439
 msgid "previous"
 msgstr ""
 
-#: kodi-playing/kodi.py:425
+#: kodi-playing/kodi.py:471
 msgid "Show played songs"
 msgstr ""
 
-#: kodi-playing/kodi.py:429
+#: kodi-playing/kodi.py:475
 msgid "Edit settings"
 msgstr ""
 
-#: kodi-playing/kodi.py:435
+#: kodi-playing/kodi.py:481
 msgid "Quit"
 msgstr ""
 
