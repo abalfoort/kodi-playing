@@ -2,7 +2,10 @@
 
 import subprocess
 import shlex
+import gi
 from gi.repository import Gio
+gi.require_version('Notify', '0.7')
+from gi.repository import Notify
 
 
 def open_text_file(file_path):
@@ -38,3 +41,13 @@ def str_int(nr_str, default_int):
             return int(nr_str)
         except ValueError:
             return default_int
+           
+def show_notification(title, summary, body=None, thumb=None, timeout=10):
+	""" Show the notification. """
+	# Init notifier
+	# https://lazka.github.io/pgi-docs/#Notify-0.7
+	Notify.init(title)
+	notification = Notify.Notification.new(summary, body, thumb)
+	notification.set_timeout(timeout * 1000)
+	notification.set_urgency(Notify.Urgency.LOW)
+	notification.show()

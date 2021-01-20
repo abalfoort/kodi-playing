@@ -13,8 +13,6 @@ try:
 except:
     gi.require_version('AyatanaAppIndicator3', '0.1')
     from gi.repository import AyatanaAppIndicator3 as AppIndicator3
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
 from gi.repository import Gio
 
 import os
@@ -33,9 +31,9 @@ from contextlib import closing
 from os.path import abspath, dirname, join, exists
 from threading import Event, Thread
 try:
-    from .utils import open_text_file, str_int
+    from .utils import open_text_file, str_int, show_notification
 except:
-    from utils import open_text_file, str_int
+    from utils import open_text_file, str_int, show_notification
 
 
 APPINDICATOR_ID = 'kodi-playing'
@@ -98,9 +96,6 @@ class KodiPlaying():
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.build_menu())
-        # Init notifier
-        # https://lazka.github.io/pgi-docs/#Notify-0.7
-        Notify.init("%s:%s" % (self.address, self.port))
         # Start thread to check for connection changes
         Thread(target=self.run_check).start()
 
@@ -120,7 +115,9 @@ class KodiPlaying():
                 self.indicator.set_menu(self.build_menu())
                 self.indicator.set_icon_full(self.grey_icon, '')
                 if not unable_notification:
-                    self.show_notification(title="%s %s:%s" % (_("Unable to connect to:"), self.address, self.port), thumb='kodi-playing')
+                    show_notification(title="%s:%s" % (self.address, self.port),
+                                      summary="%s %s:%s" % (_("Unable to connect to:"), self.address, self.port), 
+                                      thumb='kodi-playing')
                     unable_notification = True
             else:
                 # Save player id (-1: no active players)
@@ -263,9 +260,11 @@ class KodiPlaying():
 
             # Show notification
             if self.notification_timeout > 0:
-                self.show_notification(title=csv_data[0][0], 
-                                       body="%s %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
-                                       thumb=self.tmp_thumb)
+                show_notification(title="%s:%s" % (self.address, self.port),
+                                  summary=csv_data[0][0], 
+                                  body="%s %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
+                                  thumb=self.tmp_thumb,
+                                  timeout=self.notification_timeout)
             print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
 
     def json_request(self, kodi_request, address, port):
@@ -539,10 +538,3 @@ class KodiPlaying():
         self.port = str_int(self.kodi_dict['kodi']['port'], 8080)
         self.wait = str_int(self.kodi_dict['kodi']['wait'], 10)
         self.notification_timeout = str_int(self.kodi_dict['kodi']['show_notification'], 10)
-        
-    def show_notification(self, title, body=None, thumb=None):
-        """ Show the notification. """
-        notification = Notify.Notification.new(title, body, thumb)
-        notification.set_timeout(self.notification_timeout * 1000)
-        notification.set_urgency(Notify.Urgency.LOW)
-        notification.show()
