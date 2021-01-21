@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-19 19:11+0100\n"
+"POT-Creation-Date: 2021-01-21 23:02+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/abalfoort/teams/54212/nl/)\n"
@@ -21,45 +21,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kodi-playing/kodi.py:123
+#: kodi-playing/kodi.py:122
 msgid "Unable to connect to:"
 msgstr "Niet in staat te verbinden:"
 
-#: kodi-playing/kodi.py:234
+#: kodi-playing/kodi.py:233
 msgid "Artist"
 msgstr "Artiest"
 
-#: kodi-playing/kodi.py:235
+#: kodi-playing/kodi.py:234
 msgid "Album"
 msgstr "Album"
 
-#: kodi-playing/kodi.py:236
+#: kodi-playing/kodi.py:235
 msgid "Time"
 msgstr "Tijd"
 
-#: kodi-playing/kodi.py:432
+#: kodi-playing/kodi.py:468
 msgid "Current song"
 msgstr "Huidig nummer"
 
-#: kodi-playing/kodi.py:437
+#: kodi-playing/kodi.py:473
 msgid "Song by index"
 msgstr "Nummer op index"
 
-#: kodi-playing/kodi.py:439
+#: kodi-playing/kodi.py:475
 msgid "previous"
 msgstr "vorige"
 
-#: kodi-playing/kodi.py:471
+#: kodi-playing/kodi.py:501
 msgid "Show played songs"
 msgstr "Toon gespeelde nummers"
 
-#: kodi-playing/kodi.py:475
+#: kodi-playing/kodi.py:505
 msgid "Edit settings"
 msgstr "Settings aanpassen"
 
-#: kodi-playing/kodi.py:481
+#: kodi-playing/kodi.py:511
 msgid "Quit"
 msgstr "Afsluiten"
+
+#: kodi-playing/kodi.py:515
+msgid "Shut down"
+msgstr "Uitschakelen"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
