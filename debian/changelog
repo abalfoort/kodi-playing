@@ -1,3 +1,11 @@
+kodi-playing (1.1.5) stable; urgency=low
+
+  * Add resume to radio menu
+  * Add shut down to radio menu
+  * Updated translations: sr, fr, nl
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Thu, 21 Jan 2021 22:58:00 +0100
+
 kodi-playing (1.1.4) stable; urgency=low
 
   * Get video info if video is playing

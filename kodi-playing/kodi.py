@@ -13,6 +13,8 @@ try:
 except:
     gi.require_version('AyatanaAppIndicator3', '0.1')
     from gi.repository import AyatanaAppIndicator3 as AppIndicator3
+gi.require_version('Notify', '0.7')
+from gi.repository import Notify
 from gi.repository import Gio
 
 import os
@@ -31,9 +33,9 @@ from contextlib import closing
 from os.path import abspath, dirname, join, exists
 from threading import Event, Thread
 try:
-    from .utils import open_text_file, str_int, show_notification
+    from .utils import open_text_file, str_int
 except:
-    from utils import open_text_file, str_int, show_notification
+    from utils import open_text_file, str_int
 
 
 APPINDICATOR_ID = 'kodi-playing'
@@ -57,7 +59,7 @@ class KodiPlaying():
         self.grey_icon = join(self.scriptdir, 'kodi-playing-grey.svg')
         self.config = ConfigParser()
         self.player_id = -1
-        self.is_radio = False
+        self.mediapath = ''
         
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
@@ -95,7 +97,9 @@ class KodiPlaying():
         self.indicator = AppIndicator3.Indicator.new(APPINDICATOR_ID, self.grey_icon, AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
-        self.indicator.set_menu(self.build_menu())
+        # Init notifier
+        # https://lazka.github.io/pgi-docs/#Notify-0.7
+        Notify.init("%s:%s" % (self.address, self.port))
         # Start thread to check for connection changes
         Thread(target=self.run_check).start()
 
@@ -111,24 +115,26 @@ class KodiPlaying():
         while not self.check_done_event.is_set():
             # Check if kodi server is online
             if not self.is_connected(self.address, self.port):
-                self.player_id = -1
-                self.indicator.set_menu(self.build_menu())
-                self.indicator.set_icon_full(self.grey_icon, '')
                 if not unable_notification:
-                    show_notification(title="%s:%s" % (self.address, self.port),
-                                      summary="%s %s:%s" % (_("Unable to connect to:"), self.address, self.port), 
-                                      thumb='kodi-playing')
+                    self.player_id = -1
+                    self.indicator.set_menu(self.build_menu())
+                    self.indicator.set_icon_full(self.grey_icon, '')
+                    self.show_notification(summary="%s %s:%s" % (_("Unable to connect to:"), self.address, self.port), 
+                                           thumb='kodi-playing')
                     unable_notification = True
             else:
                 # Save player id (-1: no active players)
+                old_player_id = self.player_id
                 self.player_id = self.get_player_id()
                 if self.player_id < 0:
-                    self.indicator.set_menu(self.build_menu())
-                    self.indicator.set_icon_full(self.grey_icon, '')
+                    if old_player_id != self.player_id:
+                        self.indicator.set_menu(self.build_menu())
+                        self.indicator.set_icon_full(self.grey_icon, '')
                 else:
-                    # Connected: build menu and show normal icon
-                    self.indicator.set_menu(self.build_menu())
-                    self.indicator.set_icon_full('kodi-playing', '')
+                    if old_player_id != self.player_id:
+                        # Connected: build menu and show normal icon
+                        self.indicator.set_menu(self.build_menu())
+                        self.indicator.set_icon_full('kodi-playing', '')
                     
                     # Reset variables
                     title = ''
@@ -138,71 +144,67 @@ class KodiPlaying():
         
                     # Retrieve the title first
                     js = self.get_playing()
-                    title = js['result']['item']['title']
-                    artist = ' '.join(js['result']['item']['artist']).replace('"', '')
-                    
-                    # Check for season/episode
-                    episode = ''
-                    try:
-                        if js['result']['item']['season'] > -1 and js['result']['item']['episode'] > -1:
-                            episode = "S%sE%s" % (js['result']['item']['season'], js['result']['item']['episode'])
-                    except:
-                        pass
-                    
-                    # Radio plugin title: split on ' - '
-                    # https://kodi.wiki/view/Add-on:Radio
-                    if not artist:
-                        if not self.is_radio:
-                            self.is_radio = True
-                            self.indicator.set_menu(self.build_menu())
-                        arr = title.split(' - ')
-                        if len(arr) == 2:
-                            artist = arr[0]
-                            title = arr[1]
-                    elif self.is_radio:
-                            self.is_radio = False
-                            self.indicator.set_menu(self.build_menu())
-                    
-                    # Check if we need to skip this title
-                    skip = False
-                    for pattern in self.kodi_dict['kodi']['skip_titles'].split(','):
-                        if pattern in title:
-                            skip = True
-                            break
+                    if js:
+                        title = js['result']['item']['title']
+                        artist = ' '.join(js['result']['item']['artist']).replace('"', '')
                         
-                    #print("title: %s, artist: %s" % (title, artist))
-        
-                    if not skip and title and title !=  prev_title:
-                        # Get album and duration
+                        # Check for season/episode
+                        episode = ''
                         try:
-                            album = js['result']['item']['showtitle'].replace('"', '')
+                            if js['result']['item']['season'] > -1 and js['result']['item']['episode'] > -1:
+                                episode = "S%sE%s" % (js['result']['item']['season'], js['result']['item']['episode'])
                         except:
-                            album = js['result']['item']['album'].replace('"', '')
-                        try:
-                            duration = js['result']['item']['duration']
-                        except:
-                            duration = 0
+                            pass
                         
-                        # Retrieve thumbnail path
-                        thumbnail = js['result']['item']['thumbnail']
-                        thumbnail_path = ''
-                        if thumbnail:
-                            thumbnail_path = self.get_thumbnail_path(thumb=thumbnail)
-                            if thumbnail_path:
-                                # Save the thumbnail_path
-                                prev_thumbnail_path = thumbnail_path
-                            else:
-                                thumbnail_path = prev_thumbnail_path
-        
-                        if title != artist:
-                            # Logging
-                            with open(self.log, 'a') as f:
-                                f.write('{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path))
-                            # Send notification
-                            self.show_song_info(index=1)
+                        # Save mediapath
+                        self.mediapath = js['result']['item']['mediapath']
                         
-                        # Save the title for the next loop
-                        prev_title = title
+                        # Radio plugin title: split on ' - '
+                        # https://kodi.wiki/view/Add-on:Radio
+                        if not artist:
+                            arr = title.split(' - ')
+                            if len(arr) == 2:
+                                artist = arr[0]
+                                title = arr[1]
+                        
+                        # Check if we need to skip this title
+                        skip = False
+                        for pattern in self.kodi_dict['kodi']['skip_titles'].split(','):
+                            if pattern in title:
+                                skip = True
+                                break
+            
+                        if not skip and title and title !=  prev_title:
+                            # Get album and duration
+                            try:
+                                album = js['result']['item']['showtitle'].replace('"', '')
+                            except:
+                                album = js['result']['item']['album'].replace('"', '')
+                            try:
+                                duration = js['result']['item']['duration']
+                            except:
+                                duration = 0
+                            
+                            # Retrieve thumbnail path
+                            thumbnail = js['result']['item']['thumbnail']
+                            thumbnail_path = ''
+                            if thumbnail:
+                                thumbnail_path = self.get_thumbnail_path(thumb=thumbnail)
+                                if thumbnail_path:
+                                    # Save the thumbnail_path
+                                    prev_thumbnail_path = thumbnail_path
+                                else:
+                                    thumbnail_path = prev_thumbnail_path
+            
+                            if title != artist:
+                                # Logging
+                                with open(self.log, 'a') as f:
+                                    f.write('{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path))
+                                # Send notification
+                                self.show_song_info(index=1)
+                            
+                            # Save the title for the next loop
+                            prev_title = title
 
             # Wait until we continue with the loop
             self.check_done_event.wait(self.wait)
@@ -260,11 +262,9 @@ class KodiPlaying():
 
             # Show notification
             if self.notification_timeout > 0:
-                show_notification(title="%s:%s" % (self.address, self.port),
-                                  summary=csv_data[0][0], 
-                                  body="%s %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
-                                  thumb=self.tmp_thumb,
-                                  timeout=self.notification_timeout)
+                self.show_notification(summary=csv_data[0][0], 
+                                       body="%s %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
+                                       thumb=self.tmp_thumb)
             print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
 
     def json_request(self, kodi_request, address, port):
@@ -298,7 +298,7 @@ class KodiPlaying():
         if self.player_id < 0: return ''
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.GetItem',
-                        'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail', 'showtitle'], 'playerid': self.player_id },
+                        'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail', 'showtitle', 'mediapath'], 'playerid': self.player_id },
                         'id': 1}            
         js = self.json_request(kodi_request=kodi_request,
                                address=self.address,
@@ -327,9 +327,12 @@ class KodiPlaying():
     
     def play_pause_player(self):
         """ Toggle play/pause. """
-        if self.is_radio:
+        if 'plugin://' in self.mediapath:
             # You cannot pause streaming audio from a plugin
-            self.stop_player()
+            if self.is_playing():
+                self.stop_player()
+            else:
+                self.play_mediapath()
         else:
             if self.player_id < 0: return
             kodi_request = {'jsonrpc': '2.0',
@@ -339,6 +342,31 @@ class KodiPlaying():
             self.json_request(kodi_request=kodi_request,
                               address=self.address,
                               port=self.port)
+            
+    def play_mediapath(self):
+        """ Start playing mediapath. """
+        #kodi_request = {'jsonrpc': '2.0',
+        #                'method': 'Player.Open',
+        #                'params': {'item': {'file': self.mediapath}},
+        #                'id': 1}
+        
+        # Workaround if above kodi_request is not working
+        # https://forum.kodi.tv/showthread.php?tid=315249&pid=2694920#pid2694920
+        kodi_request = [{'jsonrpc': '2.0',
+                         'method': 'Playlist.Clear',
+                         'params': {'playlistid': 0},
+                         'id': 1},
+                        {'jsonrpc': '2.0',
+                         'method': 'Playlist.Add',
+                         'params': {'playlistid': 0, 'item': {'file': self.mediapath}},
+                         'id': 1},
+                        {'jsonrpc': '2.0',
+                         'method': 'Player.Open',
+                         'params': {'item': {'playlistid': 0, 'position': 0}},
+                         'id': 1}]
+        self.json_request(kodi_request=kodi_request,
+                          address=self.address,
+                          port=self.port)
         
     def stop_player(self):
         """ Stop playing. """
@@ -346,6 +374,15 @@ class KodiPlaying():
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.Stop',
                         'params': { 'playerid': self.player_id },
+                        'id': 1}
+        self.json_request(kodi_request=kodi_request,
+                          address=self.address,
+                          port=self.port)
+        
+    def system_shut_down(self):
+        """ Shutdown system. """
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'System.Shutdown',
                         'id': 1}
         self.json_request(kodi_request=kodi_request,
                           address=self.address,
@@ -453,15 +490,9 @@ class KodiPlaying():
         menu.append(Gtk.SeparatorMenuItem())
         
         if self.is_playing():
-            if self.is_radio:
-                item_pp = Gtk.MenuItem.new_with_label(" ◻")
-            else:
-                item_pp = Gtk.MenuItem.new_with_label(" ▯▯")
+            item_pp = Gtk.MenuItem.new_with_label(" ▯▯")
         else:
-            if self.is_radio:
-                item_pp = Gtk.MenuItem.new_with_label("")
-            else:
-                item_pp = Gtk.MenuItem.new_with_label(" ▷")
+            item_pp = Gtk.MenuItem.new_with_label(" ▷")
         item_pp.connect('activate', self.play_pause)
         menu.append(item_pp)
         
@@ -481,16 +512,27 @@ class KodiPlaying():
         item_quit.connect('activate', self.quit)
         menu.append(item_quit)
         
+        item_shut_down = Gtk.MenuItem.new_with_label(_('Shut down'))
+        item_shut_down.connect('activate', self.shut_down)
+        menu.append(item_shut_down)
+        
         menu.show_all()
         
         if self.player_id >= 0:
             self.item_now_playing.set_sensitive(True)
             item_index.set_sensitive(True)
-            item_pp.set_sensitive(True)
         else:
             self.item_now_playing.set_sensitive(False)
             item_index.set_sensitive(False)
+            
+        if self.is_connected(self.address, self.port):
+            item_pp.set_sensitive(True)
+            item_log.set_sensitive(True)
+            item_shut_down.set_sensitive(True)
+        else:
             item_pp.set_sensitive(False)
+            item_log.set_sensitive(False)
+            item_shut_down.set_sensitive(False)
 
         return menu
     
@@ -507,7 +549,6 @@ class KodiPlaying():
     def play_pause(self, widget=None):
         """ Menu function to call play_pause_player. """
         self.play_pause_player()
-        self.indicator.set_menu(self.build_menu())
     
     def show_log(self, widget=None):
         """ Open kodi-playing.csv in default editor. """
@@ -518,6 +559,10 @@ class KodiPlaying():
         if exists(self.conf):
             open_text_file(self.conf)
             self.read_config()
+            
+    def shut_down(self, widget=None):
+        """ Menu function to call system_shut_down. """
+        self.system_shut_down()
         
     # ===============================================
     # General functions
@@ -538,3 +583,10 @@ class KodiPlaying():
         self.port = str_int(self.kodi_dict['kodi']['port'], 8080)
         self.wait = str_int(self.kodi_dict['kodi']['wait'], 10)
         self.notification_timeout = str_int(self.kodi_dict['kodi']['show_notification'], 10)
+    
+    def show_notification(self, summary, body=None, thumb=None):
+        """ Show the notification. """
+        notification = Notify.Notification.new(summary, body, thumb)
+        notification.set_timeout(self.notification_timeout * 1000)
+        notification.set_urgency(Notify.Urgency.LOW)
+        notification.show()
