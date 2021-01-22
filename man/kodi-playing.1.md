@@ -16,8 +16,9 @@ kodi-playing - Show a notification when your Kodi server is playing a new song.
 The indicator sits in the system tray and shows what Kodi is playing.
 
 * Changes in settings will be aplied the next time you start kodi-playing.
-* Log file is a tab-delimited csv file and is recreated each time kodi-playing is started.
-* Song by index: 2 = previous song, 3 = song before that, etc.
+* All played songs are saved to a tab-delimited csv file. This file is recreated each time kodi-playing is started.
+* Shutdown or reboot the system.
+* Play/pause media.
 
 # SETTINGS
 
