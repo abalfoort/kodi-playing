@@ -1,8 +1,14 @@
 #! /usr/bin/env python3
 
-# Purpose:  show notification what song Kodi is playing.
-# Files:    $HOME/.kodi-playing
-# Author:   Arjen Balfoort, 19-01-2021
+# Purpose:      show notification what song Kodi is playing.
+# Files:        $HOME/.kodi-playing
+# References:
+# i18n:         http://docs.python.org/3/library/gettext.html
+# notify:       https://lazka.github.io/pgi-docs/#Notify-0.7
+# appindicator: https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
+# csv:          https://docs.python.org/3/library/csv.html
+# jsonrpc:      https://kodi.wiki/view/JSON-RPC_API/v10
+# Author:       Arjen Balfoort, 19-01-2021
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -40,7 +46,7 @@ except:
 
 APPINDICATOR_ID = 'kodi-playing'
 
-# i18n: http://docs.python.org/3/library/gettext.html
+
 import gettext
 from gettext import gettext as _
 gettext.textdomain(APPINDICATOR_ID)
@@ -53,13 +59,14 @@ class KodiPlaying():
         self.home = str(Path.home())
         self.local_dir = join(self.home, '.kodi-playing')
         self.conf = join(self.local_dir, 'settings.ini')
-        self.log = join(self.local_dir, 'kodi-playing.csv')
+        self.csv = join(self.local_dir, 'kodi-playing.csv')
         self.tmp_thumb = '/tmp/kodi-playing.png'
         self.autostart_dt = join(self.home, '.config/autostart/kodi-playing-autostart.desktop')
         self.grey_icon = join(self.scriptdir, 'kodi-playing-grey.svg')
         self.config = ConfigParser()
         self.player_id = -1
         self.mediapath = ''
+        self.position = -1
         
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
@@ -93,20 +100,19 @@ class KodiPlaying():
         # Create event to use when thread is done
         self.check_done_event = Event()
         # Create global indicator object
-        # https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
         self.indicator = AppIndicator3.Indicator.new(APPINDICATOR_ID, self.grey_icon, AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+        self.indicator.set_menu(self.build_menu())
         # Init notifier
-        # https://lazka.github.io/pgi-docs/#Notify-0.7
         Notify.init("%s:%s" % (self.address, self.port))
         # Start thread to check for connection changes
         Thread(target=self.run_check).start()
 
     def run_check(self):
         """ Poll Kodi for currently playing song. """
-        # Initiate log file (tab seperated csv)
-        open(self.log, 'w').close()
+        # Initiate csv file (tab delimited)
+        open(self.csv, 'w').close()
         # Initiate variables
         prev_title = ''
         prev_thumbnail_path = ''
@@ -198,8 +204,10 @@ class KodiPlaying():
             
                             if title != artist:
                                 # Logging
-                                with open(self.log, 'a') as f:
+                                with open(self.csv, 'a') as f:
                                     f.write('{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path))
+                                # Save playlist position
+                                self.position = self.get_playlist_position()
                                 # Send notification
                                 self.show_song_info(index=1)
                             
@@ -218,8 +226,7 @@ class KodiPlaying():
         # Get last two songs from csv data
         csv_data = []
         i = 0
-        with open(self.log, 'r') as f:
-            # https://docs.python.org/3/library/csv.html
+        with open(self.csv, 'r') as f:
             for row in reversed(list(csv.reader(f, delimiter='\t'))):
                 i += 1
                 # We need to save the selected song
@@ -268,10 +275,7 @@ class KodiPlaying():
             print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
 
     def json_request(self, kodi_request, address, port):
-        """ 
-        Return json data from Kodi. 
-        https://kodi.wiki/view/JSON-RPC_API/v10
-        """
+        """ Return json data from Kodi. """
         try:
             request = Request("http://%s:%s/jsonrpc" % (address, port), 
                               bytes(json.dumps(kodi_request), encoding='utf8'), 
@@ -324,6 +328,21 @@ class KodiPlaying():
                                         js['result']['details']['path'])
         except:
             return ''
+        
+    def get_playlist_position(self):
+        """ Get current position in playlist. """
+        if self.player_id < 0: return 0
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'Player.GetProperties', 
+                        'params': { 'playerid': self.player_id, 'properties': ['position'] }, 
+                        'id': 1}
+        js = self.json_request(kodi_request=kodi_request,
+                               address=self.address,
+                               port=self.port)
+        try:
+            return js['result']['position']
+        except:
+            return 0
     
     def play_pause_player(self):
         """ Toggle play/pause. """
@@ -333,15 +352,34 @@ class KodiPlaying():
                 self.stop_player()
             else:
                 self.play_mediapath()
+            # Set menu label
+            self.set_play_pause_label()
         else:
-            if self.player_id < 0: return
-            kodi_request = {'jsonrpc': '2.0',
-                            'method': 'Player.PlayPause',
-                            'params': { 'playerid': self.player_id },
-                            'id': 1}
-            self.json_request(kodi_request=kodi_request,
-                              address=self.address,
-                              port=self.port)
+            if self.player_id < 0:
+                if self.position >= 0:
+                    # Player was stopped (not paused) but we have a saved position
+                    kodi_request = {'jsonrpc': '2.0',
+                                    'method': 'Player.Open',
+                                    'params': {'item': {'playlistid': 0, 'position': self.position}},
+                                    'id': 1}
+                    self.json_request(kodi_request=kodi_request,
+                                      address=self.address,
+                                      port=self.port)
+                    # Reset position
+                    self.position = -1
+                else:
+                    return
+            else:
+                # Play or pause media
+                kodi_request = {'jsonrpc': '2.0',
+                                'method': 'Player.PlayPause',
+                                'params': { 'playerid': self.player_id },
+                                'id': 1}
+                self.json_request(kodi_request=kodi_request,
+                                  address=self.address,
+                                  port=self.port)
+            # Set menu label
+            self.set_play_pause_label()
             
     def play_mediapath(self):
         """ Start playing mediapath. """
@@ -383,6 +421,15 @@ class KodiPlaying():
         """ Shutdown system. """
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'System.Shutdown',
+                        'id': 1}
+        self.json_request(kodi_request=kodi_request,
+                          address=self.address,
+                          port=self.port)
+        
+    def system_reboot(self):
+        """ Reboot system. """
+        kodi_request = {'jsonrpc': '2.0',
+                        'method': 'System.Reboot',
                         'id': 1}
         self.json_request(kodi_request=kodi_request,
                           address=self.address,
@@ -465,76 +512,69 @@ class KodiPlaying():
         """ Build menu for the tray icon. """
         menu = Gtk.Menu()
         
-        self.item_now_playing = Gtk.MenuItem.new_with_label(_("Current song"))
-        self.item_now_playing.connect('activate', self.show_current)
-        menu.append(self.item_now_playing)
-        
-        # Song by index
-        item_index = Gtk.MenuItem.new_with_label(_("Song by index"))
+        # Kodi menu
+        item_kodi = Gtk.MenuItem.new_with_label('Kodi')
         sub_menu = Gtk.Menu()
-        sub_item_index_2 = Gtk.MenuItem.new_with_label("2 - %s" % _("previous"))
-        sub_item_index_2.connect('activate', self.show_index, 2)
-        sub_menu.append(sub_item_index_2)
-        sub_item_index_3 = Gtk.MenuItem.new_with_label('3')
-        sub_item_index_3.connect('activate', self.show_index, 3)
-        sub_menu.append(sub_item_index_3)
-        sub_item_index_4 = Gtk.MenuItem.new_with_label('4')
-        sub_item_index_4.connect('activate', self.show_index, 4)
-        sub_menu.append(sub_item_index_4)
-        sub_item_index_5 = Gtk.MenuItem.new_with_label('5')
-        sub_item_index_5.connect('activate', self.show_index, 5)
-        sub_menu.append(sub_item_index_5)
-        item_index.set_submenu(sub_menu)
-        menu.append(item_index)
-        
-        menu.append(Gtk.SeparatorMenuItem())
-        
-        if self.is_playing():
-            item_pp = Gtk.MenuItem.new_with_label(" ▯▯")
-        else:
-            item_pp = Gtk.MenuItem.new_with_label(" ▷")
-        item_pp.connect('activate', self.play_pause)
-        menu.append(item_pp)
-        
-        menu.append(Gtk.SeparatorMenuItem())
-        
-        item_log = Gtk.MenuItem.new_with_label(_("Show played songs"))
-        item_log.connect('activate', self.show_log)
-        menu.append(item_log)
-        
+        item_csv = Gtk.MenuItem.new_with_label(_("Show played songs"))
+        item_csv.connect('activate', self.show_csv)
+        sub_menu.append(item_csv)
         item_settings = Gtk.MenuItem.new_with_label(_("Edit settings"))
         item_settings.connect('activate', self.show_settings)
-        menu.append(item_settings)
+        sub_menu.append(item_settings)
+        item_shut_down = Gtk.MenuItem.new_with_label(_('Shut down'))
+        item_shut_down.connect('activate', self.shut_down)
+        sub_menu.append(item_shut_down)
+        item_reboot = Gtk.MenuItem.new_with_label(_('Reboot'))
+        item_reboot.connect('activate', self.reboot)
+        sub_menu.append(item_reboot)
+        item_kodi.set_submenu(sub_menu)
+        menu.append(item_kodi)
         
         menu.append(Gtk.SeparatorMenuItem())
         
+        item_now_playing = Gtk.MenuItem.new_with_label(_("Now playing"))
+        item_now_playing.connect('activate', self.show_current)
+        menu.append(item_now_playing)
+        
+        menu.append(Gtk.SeparatorMenuItem())
+        
+        self.item_play_pause = Gtk.MenuItem.new()
+        self.set_play_pause_label()
+        self.item_play_pause.connect('activate', self.play_pause)
+        menu.append(self.item_play_pause)
+        
+        menu.append(Gtk.SeparatorMenuItem())
+
         item_quit = Gtk.MenuItem.new_with_label(_('Quit'))
         item_quit.connect('activate', self.quit)
         menu.append(item_quit)
         
-        item_shut_down = Gtk.MenuItem.new_with_label(_('Shut down'))
-        item_shut_down.connect('activate', self.shut_down)
-        menu.append(item_shut_down)
-        
         menu.show_all()
-        
-        if self.player_id >= 0:
-            self.item_now_playing.set_sensitive(True)
-            item_index.set_sensitive(True)
-        else:
-            self.item_now_playing.set_sensitive(False)
-            item_index.set_sensitive(False)
-            
+
         if self.is_connected(self.address, self.port):
-            item_pp.set_sensitive(True)
-            item_log.set_sensitive(True)
+            if self.player_id >= 0:
+                item_now_playing.set_sensitive(True)
+            else:
+                item_now_playing.set_sensitive(False)
+            self.item_play_pause.set_sensitive(True)
             item_shut_down.set_sensitive(True)
+            item_reboot.set_sensitive(True)
+            item_csv.set_sensitive(True)
         else:
-            item_pp.set_sensitive(False)
-            item_log.set_sensitive(False)
+            item_now_playing.set_sensitive(False)
+            self.item_play_pause.set_sensitive(False)
+            item_csv.set_sensitive(False)
             item_shut_down.set_sensitive(False)
+            item_reboot.set_sensitive(False)
 
         return menu
+    
+    def set_play_pause_label(self):
+        """ Set label for play/pause button """
+        if self.is_playing():
+            self.item_play_pause.set_label(" ▯▯")
+        else:
+            self.item_play_pause.set_label(" ▷")
     
     def show_current(self, widget=None):
         """ Show last played song. """
@@ -550,9 +590,9 @@ class KodiPlaying():
         """ Menu function to call play_pause_player. """
         self.play_pause_player()
     
-    def show_log(self, widget=None):
+    def show_csv(self, widget=None):
         """ Open kodi-playing.csv in default editor. """
-        subprocess.call(['xdg-open', self.log])
+        subprocess.call(['xdg-open', self.csv])
     
     def show_settings(self, widget=None):
         """ Open settings.ini in default editor. """
@@ -563,6 +603,10 @@ class KodiPlaying():
     def shut_down(self, widget=None):
         """ Menu function to call system_shut_down. """
         self.system_shut_down()
+        
+    def reboot(self, widget=None):
+        """ Menu function to call system_reboot. """
+        self.system_reboot()
         
     # ===============================================
     # General functions
