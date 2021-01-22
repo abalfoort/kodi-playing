@@ -1,8 +1,11 @@
 kodi-playing (1.1.5) stable; urgency=low
 
-  * Add resume to radio menu
-  * Add shut down to radio menu
+  * Add resume to menu for radio plugin
+  * Add shut down to menu
   * Updated translations: sr, fr, nl
+  * Redesign menu: focus on what's playing
+  * Add reboot menu
+  * Resume last played song after stopping player
 
  -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Thu, 21 Jan 2021 22:58:00 +0100
 
