@@ -9,6 +9,7 @@ import sys
 import subprocess
 import getpass
 import signal
+from os.path import join
 try:
     from .kodi import KodiPlaying
     from .dialogs import ErrorDialog
@@ -49,11 +50,11 @@ def uncaught_excepthook(*args):
         details = '\n'.join(traceback.format_exception(*args)).replace('<', '').replace('>', '')
         # Save to error file
         error_file = join(Path.home(), ".kodi-playing/error.log")
-        with open(error_file) as f:
+        with open(error_file, 'w') as f:
             f.write(details)
         title = 'Unexpected error'
         msg = "Please submit a bug report: %s" % error_file
-        ErrorDialog(title, "<b>%s</b>" % msg, "<tt>%s</tt>" % details, None, True, 'live-installer-3')
+        ErrorDialog(title, "<b>%s</b>" % msg, "<tt>%s</tt>" % details, None, True)
 
     sys.exit(1)
 
@@ -61,7 +62,7 @@ sys.excepthook = uncaught_excepthook
 
 def main():
     # Check if already running
-    cmd = "pgrep -u %s -f python3.*kodi-playing" % getpass.getuser()
+    cmd = "pgrep -u %s -f 'python3 .*kodi-playing'" % getpass.getuser()
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid, err = process.communicate()
     if len(pid.splitlines()) > 1:
