@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-21 22:58+0100\n"
+"POT-Creation-Date: 2021-01-23 17:17+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Slobodan Simić <slsimic@gmail.com>, 2021\n"
 "Language-Team: Serbian (https://www.transifex.com/abalfoort/teams/54212/"
@@ -23,49 +23,45 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: kodi-playing/kodi.py:122
+#: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
 msgstr "Не могу да се повежем са:"
 
-#: kodi-playing/kodi.py:233
+#: kodi-playing/kodi.py:240
 msgid "Artist"
 msgstr "Извођач"
 
-#: kodi-playing/kodi.py:234
+#: kodi-playing/kodi.py:241
 msgid "Album"
 msgstr "Албум"
 
-#: kodi-playing/kodi.py:235
+#: kodi-playing/kodi.py:242
 msgid "Time"
 msgstr "Време"
 
-#: kodi-playing/kodi.py:468
-msgid "Current song"
-msgstr "Тренутна песма"
-
-#: kodi-playing/kodi.py:473
-msgid "Song by index"
-msgstr "Индекс песама"
-
-#: kodi-playing/kodi.py:475
-msgid "previous"
-msgstr "претходно"
-
-#: kodi-playing/kodi.py:501
+#: kodi-playing/kodi.py:525
 msgid "Show played songs"
 msgstr "Прикажи пуштане песме"
 
-#: kodi-playing/kodi.py:505
-msgid "Edit settings"
-msgstr "Уреди поставке"
+#: kodi-playing/kodi.py:528
+msgid "Shut down"
+msgstr "Угаси"
 
-#: kodi-playing/kodi.py:511
+#: kodi-playing/kodi.py:531
+msgid "Reboot"
+msgstr "Поново покрени"
+
+#: kodi-playing/kodi.py:535
+msgid "Settings"
+msgstr "Поставке"
+
+#: kodi-playing/kodi.py:543
+msgid "Now playing"
+msgstr "Сада се пушта"
+
+#: kodi-playing/kodi.py:556
 msgid "Quit"
 msgstr "Напусти"
-
-#: kodi-playing/kodi.py:515
-msgid "Shut down"
-msgstr ""
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
