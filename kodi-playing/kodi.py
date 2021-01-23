@@ -247,9 +247,9 @@ class KodiPlaying():
             spaces = '<td> </td><td> </td><td> </td><td> </td>'
             
             if csv_data[0][1]:
-                artist_str = "<tr><td><b>%s</b>:</td>%s<td>%s</td></tr>" % (artist_title, spaces, csv_data[0][1])
+                artist_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (artist_title, spaces, csv_data[0][1])
             if csv_data[0][2]:
-                album_str = "<tr><td><b>%s</b>:</td>%s<td>%s</td></tr>" % (album_title, spaces, csv_data[0][2])
+                album_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (album_title, spaces, csv_data[0][2])
             if str_int(csv_data[0][3], 0) > 0:
                 # Convert to "00:00" notation
                 duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
@@ -259,7 +259,7 @@ class KodiPlaying():
                     played = self.get_song_time_played()
                     # Convert to "00:00" notation
                     played = strftime("%M:%S", gmtime(played))
-                duration_str = "<tr><td><b>%s</b>:</td>%s<td>%s (%s)</td></tr>" % (duration_title, spaces, played, duration)
+                duration_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s (%s)</td></tr>" % (duration_title, spaces, played, duration)
 
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
