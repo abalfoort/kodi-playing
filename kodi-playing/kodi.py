@@ -8,7 +8,7 @@
 # appindicator: https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
 # csv:          https://docs.python.org/3/library/csv.html
 # jsonrpc:      https://kodi.wiki/view/JSON-RPC_API/v10
-# Author:       Arjen Balfoort, 19-01-2021
+# Author:       Arjen Balfoort, 23-01-2021
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -231,23 +231,25 @@ class KodiPlaying():
                 i += 1
                 # We need to save the selected song
                 # and the previous song to compare thumbnails
-                if i == index or i == index + 1:
+                if len(row) == 5 and (i == index or i == index + 1):
                     csv_data.append(row)
                     if i == index + 1:
                         break
 
         if csv_data:
-            artist_title = "%s:" % _('Artist')
+            artist_title = _('Artist')
             album_title = _('Album')
             duration_title = _('Time')
+            artist_str = ''
             album_str = ''
             duration_str = ''
             duration = ''
+            spaces = '<td> </td><td> </td><td> </td><td> </td>'
             
-            if not csv_data[0][1]:
-                artist_title = ''
+            if csv_data[0][1]:
+                artist_str = "<tr><td><b>%s</b>:</td>%s<td>%s</td></tr>" % (artist_title, spaces, csv_data[0][1])
             if csv_data[0][2]:
-                album_str = "<br>%s: %s" % (album_title, csv_data[0][2])
+                album_str = "<tr><td><b>%s</b>:</td>%s<td>%s</td></tr>" % (album_title, spaces, csv_data[0][2])
             if str_int(csv_data[0][3], 0) > 0:
                 # Convert to "00:00" notation
                 duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
@@ -257,7 +259,7 @@ class KodiPlaying():
                     played = self.get_song_time_played()
                     # Convert to "00:00" notation
                     played = strftime("%M:%S", gmtime(played))
-                duration_str = "<br>%s: %s (%s)" % (duration_title, played, duration)
+                duration_str = "<tr><td><b>%s</b>:</td>%s<td>%s (%s)</td></tr>" % (duration_title, spaces, played, duration)
 
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
@@ -270,9 +272,14 @@ class KodiPlaying():
             # Show notification
             if self.notification_timeout > 0:
                 self.show_notification(summary=csv_data[0][0], 
-                                       body="%s %s %s %s" % (artist_title, csv_data[0][1], album_str, duration_str), 
+                                       body="<table>%s%s%s</table>" % (artist_str, album_str, duration_str), 
                                        thumb=self.tmp_thumb)
-            print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
+            try:
+                # If runnin from terminal: show info
+                # Crashes when terminal has been closed afterwards
+                print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
+            except:
+                pass
 
     def json_request(self, kodi_request, address, port):
         """ Return json data from Kodi. """
@@ -485,7 +492,7 @@ class KodiPlaying():
         if not host:
             return False
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-            sock.settimeout(1)
+            sock.settimeout(self.wait)
             try:
                 if sock.connect_ex((host, port)) == 0:
                     return True
@@ -518,42 +525,44 @@ class KodiPlaying():
         item_csv = Gtk.MenuItem.new_with_label(_("Show played songs"))
         item_csv.connect('activate', self.show_csv)
         sub_menu.append(item_csv)
-        item_settings = Gtk.MenuItem.new_with_label(_("Edit settings"))
-        item_settings.connect('activate', self.show_settings)
-        sub_menu.append(item_settings)
         item_shut_down = Gtk.MenuItem.new_with_label(_('Shut down'))
         item_shut_down.connect('activate', self.shut_down)
         sub_menu.append(item_shut_down)
         item_reboot = Gtk.MenuItem.new_with_label(_('Reboot'))
         item_reboot.connect('activate', self.reboot)
         sub_menu.append(item_reboot)
+        sub_menu.append(Gtk.SeparatorMenuItem())
+        item_settings = Gtk.MenuItem.new_with_label(_("Settings"))
+        item_settings.connect('activate', self.show_settings)
+        sub_menu.append(item_settings)
         item_kodi.set_submenu(sub_menu)
         menu.append(item_kodi)
         
+        # Now playing menu
         menu.append(Gtk.SeparatorMenuItem())
-        
         item_now_playing = Gtk.MenuItem.new_with_label(_("Now playing"))
         item_now_playing.connect('activate', self.show_current)
         menu.append(item_now_playing)
         
+        # Play/pause menu
         menu.append(Gtk.SeparatorMenuItem())
-        
         self.item_play_pause = Gtk.MenuItem.new()
         self.set_play_pause_label()
         self.item_play_pause.connect('activate', self.play_pause)
         menu.append(self.item_play_pause)
         
+        # Quit menu
         menu.append(Gtk.SeparatorMenuItem())
-
         item_quit = Gtk.MenuItem.new_with_label(_('Quit'))
         item_quit.connect('activate', self.quit)
         menu.append(item_quit)
-        
-        menu.show_all()
 
+        # Decide what can be used
         if self.is_connected(self.address, self.port):
             if self.player_id >= 0:
                 item_now_playing.set_sensitive(True)
+                # Add middle click action
+                self.indicator.set_secondary_activate_target(item_now_playing)
             else:
                 item_now_playing.set_sensitive(False)
             self.item_play_pause.set_sensitive(True)
@@ -566,7 +575,9 @@ class KodiPlaying():
             item_csv.set_sensitive(False)
             item_shut_down.set_sensitive(False)
             item_reboot.set_sensitive(False)
-
+        
+        # Show the menu and return the menu object
+        menu.show_all()
         return menu
     
     def set_play_pause_label(self):
@@ -626,6 +637,7 @@ class KodiPlaying():
         self.address = self.kodi_dict['kodi']['address']
         self.port = str_int(self.kodi_dict['kodi']['port'], 8080)
         self.wait = str_int(self.kodi_dict['kodi']['wait'], 10)
+        if self.wait < 1: self.wait = 1
         self.notification_timeout = str_int(self.kodi_dict['kodi']['show_notification'], 10)
     
     def show_notification(self, summary, body=None, thumb=None):
