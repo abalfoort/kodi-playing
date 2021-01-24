@@ -13,4 +13,4 @@ Features:
 You can help translating kodi-playing on [Transifex](https://www.transifex.com/abalfoort/kodi-playing)
 
 ## Screenshot
-![System Tray Screenshot](data/sreenshot.png)
+![System Tray Screenshot](data/screenshot.png)
