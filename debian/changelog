@@ -1,3 +1,9 @@
+kodi-playing (1.1.6) stable; urgency=low
+
+  * Add information for movies/series
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Sun, 24 Jan 2021 19:41:26 +0100
+
 kodi-playing (1.1.5) stable; urgency=low
 
   * Add resume to menu for radio plugin

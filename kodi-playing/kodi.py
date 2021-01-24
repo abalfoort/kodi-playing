@@ -129,6 +129,9 @@ class KodiPlaying():
                                            thumb='kodi-playing')
                     unable_notification = True
             else:
+                # In case we loose connection later on
+                unable_notification = False
+                
                 # Save player id (-1: no active players)
                 old_player_id = self.player_id
                 self.player_id = self.get_player_id()
@@ -154,14 +157,6 @@ class KodiPlaying():
                         title = js['result']['item']['title']
                         artist = ' '.join(js['result']['item']['artist']).replace('"', '')
                         
-                        # Check for season/episode
-                        episode = ''
-                        try:
-                            if js['result']['item']['season'] > -1 and js['result']['item']['episode'] > -1:
-                                episode = "S%sE%s" % (js['result']['item']['season'], js['result']['item']['episode'])
-                        except:
-                            pass
-                        
                         # Save mediapath
                         self.mediapath = js['result']['item']['mediapath']
                         
@@ -179,7 +174,7 @@ class KodiPlaying():
                             if pattern in title:
                                 skip = True
                                 break
-            
+
                         if not skip and title and title !=  prev_title:
                             # Get album and duration
                             try:
@@ -189,7 +184,24 @@ class KodiPlaying():
                             try:
                                 duration = js['result']['item']['duration']
                             except:
-                                duration = 0
+                                try:
+                                    duration, played = self.get_media_times()
+                                except:
+                                    duration = 0
+                                
+                            # Check for season/episode and misuse album to show the episode
+                            season_episode = ''
+                            try:
+                                season = int(js['result']['item']['season'])
+                                episode = int(js['result']['item']['episode'])
+                                if season > -1 and episode > -1:
+                                    # Display with leading zero
+                                    # print("%02d" % (1,))
+                                    season = "%02d" % (season,)
+                                    episode = "%02d" % (episode,)
+                                    season_episode = "S%sE%s" % (season, episode)
+                            except:
+                                pass
                             
                             # Retrieve thumbnail path
                             thumbnail = js['result']['item']['thumbnail']
@@ -205,7 +217,7 @@ class KodiPlaying():
                             if title != artist:
                                 # Logging
                                 with open(self.csv, 'a') as f:
-                                    f.write('{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path))
+                                    f.write('{}\t{}\t{}\t{}\t{}\t{}\n'.format(title, artist, album, duration, thumbnail_path, season_episode))
                                 # Save playlist position
                                 self.position = self.get_playlist_position()
                                 # Send notification
@@ -231,7 +243,7 @@ class KodiPlaying():
                 i += 1
                 # We need to save the selected song
                 # and the previous song to compare thumbnails
-                if len(row) == 5 and (i == index or i == index + 1):
+                if len(row) >= 5 and (i == index or i == index + 1):
                     csv_data.append(row)
                     if i == index + 1:
                         break
@@ -239,28 +251,41 @@ class KodiPlaying():
         if csv_data:
             artist_title = _('Artist')
             album_title = _('Album')
-            duration_title = _('Time')
+            duration_title = _('Duration')
+            episode_title = _('Episode')
+            series_title = _('Series')
             artist_str = ''
             album_str = ''
             duration_str = ''
+            episode_str = ''
             duration = ''
             spaces = '<td> </td><td> </td><td> </td><td> </td>'
             
+            # Artist
             if csv_data[0][1]:
                 artist_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (artist_title, spaces, csv_data[0][1])
+            # Album/Series
             if csv_data[0][2]:
-                album_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (album_title, spaces, csv_data[0][2])
-            if str_int(csv_data[0][3], 0) > 0:
+                if csv_data[0][5]:
+                    # Series
+                    album_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (series_title, spaces, csv_data[0][2])
+                else:
+                    # Album
+                    album_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (album_title, spaces, csv_data[0][2])
+            # Duration
+            duration = str_int(csv_data[0][3], 0)
+            if duration > 0:
                 # Convert to "00:00" notation
-                duration = strftime("%M:%S", gmtime(int(csv_data[0][3])))
+                time_format = "%M:%S" if duration < 3600 else "%H:%M:%S"
+                duration = strftime(time_format, gmtime(duration))
                 played = duration
                 if index == 1:
                     # Get time played
-                    played = self.get_song_time_played()
+                    total, played = self.get_media_times()
                     # Convert to "00:00" notation
-                    played = strftime("%M:%S", gmtime(played))
+                    played = strftime(time_format, gmtime(played))
                 duration_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s (%s)</td></tr>" % (duration_title, spaces, played, duration)
-
+            # Thumbnail
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
                 if not exists(self.tmp_thumb) or len(csv_data) == 1:
@@ -268,16 +293,19 @@ class KodiPlaying():
                 elif len(csv_data) > 1:
                     if csv_data[0][4] != csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
+            # Episode 
+            if csv_data[0][5]:
+                episode_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (episode_title, spaces, csv_data[0][5])
 
             # Show notification
             if self.notification_timeout > 0:
                 self.show_notification(summary=csv_data[0][0], 
-                                       body="<table>%s%s%s</table>" % (artist_str, album_str, duration_str), 
+                                       body="<table>%s%s%s%s</table>" % (artist_str, album_str, episode_str, duration_str), 
                                        thumb=self.tmp_thumb)
             try:
                 # If runnin from terminal: show info
                 # Crashes when terminal has been closed afterwards
-                print(("%s, %s, %s, %s" % (csv_data[0][0], csv_data[0][1], csv_data[0][2], duration)))
+                print(','.join(csv_data))
             except:
                 pass
 
@@ -309,7 +337,7 @@ class KodiPlaying():
         if self.player_id < 0: return ''
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.GetItem',
-                        'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail', 'showtitle', 'mediapath'], 'playerid': self.player_id },
+                        'params': { 'properties': ['title', 'album', 'artist', 'duration', 'thumbnail', 'showtitle', 'mediapath', 'season', 'episode'], 'playerid': self.player_id },
                         'id': 1}            
         js = self.json_request(kodi_request=kodi_request,
                                address=self.address,
@@ -456,8 +484,8 @@ class KodiPlaying():
         except:
             return False
     
-    def get_song_time_played(self):
-        """ Get played seconds of currently playing song. """
+    def get_media_times(self):
+        """ Get total seconds and played seconds of currently playing media. """
         if self.player_id < 0: return 0
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.GetProperties',
@@ -467,10 +495,10 @@ class KodiPlaying():
                                address=self.address,
                                port=self.port)
         try:
-            duration = (int(js['result']['totaltime']['minutes']) * 60) + int(js['result']['totaltime']['seconds'])
-            return duration * (float(js['result']['percentage']) / 100)
+            duration = (int(js['result']['totaltime']['hours']) * 60 * 60) + (int(js['result']['totaltime']['minutes']) * 60) + int(js['result']['totaltime']['seconds'])
+            return (duration, (duration * (float(js['result']['percentage']) / 100)))
         except:
-            return 0
+            return (0, 0)
     
     def is_playing(self):
         """ Get played seconds of currently playing song. """
