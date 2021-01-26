@@ -1,3 +1,10 @@
+kodi-playing (1.1.7) stable; urgency=low
+
+  * Remove time played from notification
+  * Add time left for movies/series
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Tue, 26 Jan 2021 19:23:28 +0100
+
 kodi-playing (1.1.6) stable; urgency=low
 
   * Add information for movies/series

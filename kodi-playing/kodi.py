@@ -7,21 +7,20 @@
 # notify:       https://lazka.github.io/pgi-docs/#Notify-0.7
 # appindicator: https://lazka.github.io/pgi-docs/#AyatanaAppIndicator3-0.1
 # csv:          https://docs.python.org/3/library/csv.html
-# jsonrpc:      https://kodi.wiki/view/JSON-RPC_API/v10
+# jsonrpc:      https://kodi.wiki/view/JSON-RPC_API/v12
 # Author:       Arjen Balfoort, 23-01-2021
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+gi.require_version('Notify', '0.7')
+from gi.repository import Gtk, Notify, Gio
 try:
     gi.require_version('AppIndicator3', '0.1')
     from gi.repository import AppIndicator3
 except:
     gi.require_version('AyatanaAppIndicator3', '0.1')
     from gi.repository import AyatanaAppIndicator3 as AppIndicator3
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
-from gi.repository import Gio
+
 
 import os
 import sys
@@ -66,6 +65,7 @@ class KodiPlaying():
         self.config = ConfigParser()
         self.player_id = -1
         self.mediapath = ''
+        self.type = ''
         self.position = -1
         
         # Create local directory
@@ -156,6 +156,7 @@ class KodiPlaying():
                     if js:
                         title = js['result']['item']['title']
                         artist = ' '.join(js['result']['item']['artist']).replace('"', '')
+                        self.type = js['result']['item']['type']
                         
                         # Save mediapath
                         self.mediapath = js['result']['item']['mediapath']
@@ -185,7 +186,7 @@ class KodiPlaying():
                                 duration = js['result']['item']['duration']
                             except:
                                 try:
-                                    duration, played = self.get_media_times()
+                                    duration, played, left = self.get_media_times()
                                 except:
                                     duration = 0
                                 
@@ -196,7 +197,6 @@ class KodiPlaying():
                                 episode = int(js['result']['item']['episode'])
                                 if season > -1 and episode > -1:
                                     # Display with leading zero
-                                    # print("%02d" % (1,))
                                     season = "%02d" % (season,)
                                     episode = "%02d" % (episode,)
                                     season_episode = "S%sE%s" % (season, episode)
@@ -221,7 +221,7 @@ class KodiPlaying():
                                 # Save playlist position
                                 self.position = self.get_playlist_position()
                                 # Send notification
-                                self.show_song_info(index=1)
+                                self.show_song_info()
                             
                             # Save the title for the next loop
                             prev_title = title
@@ -233,7 +233,7 @@ class KodiPlaying():
     # Kodi functions
     # ===============================================
 
-    def show_song_info(self, index):
+    def show_song_info(self, index=1):
         """ Show song information in notification. """
         # Get last two songs from csv data
         csv_data = []
@@ -254,6 +254,7 @@ class KodiPlaying():
             duration_title = _('Duration')
             episode_title = _('Episode')
             series_title = _('Series')
+            time_left_title = _('Time left')
             artist_str = ''
             album_str = ''
             duration_str = ''
@@ -277,14 +278,14 @@ class KodiPlaying():
             if duration > 0:
                 # Convert to "00:00" notation
                 time_format = "%M:%S" if duration < 3600 else "%H:%M:%S"
-                duration = strftime(time_format, gmtime(duration))
-                played = duration
-                if index == 1:
-                    # Get time played
-                    total, played = self.get_media_times()
+                duration_format_str = strftime(time_format, gmtime(duration))
+                if index == 1 and self.type != 'song':
+                    # Get time left for movies/series only
+                    total, played, left = self.get_media_times()
                     # Convert to "00:00" notation
-                    played = strftime(time_format, gmtime(played))
-                duration_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s (%s)</td></tr>" % (duration_title, spaces, played, duration)
+                    left = strftime(time_format, gmtime(left))
+                    duration_format_str = "%s (%s: %s)" % (duration_format_str, time_left_title, left)
+                duration_str = "<tr><td><b>%s</b></td><td>:</td>%s<td>%s</td></tr>" % (duration_title, spaces, duration_format_str)
             # Thumbnail
             if csv_data[0][4]:
                 # Check with previous song before downloading thumbnail
@@ -485,7 +486,7 @@ class KodiPlaying():
             return False
     
     def get_media_times(self):
-        """ Get total seconds and played seconds of currently playing media. """
+        """ Get total time, time played and time left of currently playing media. """
         if self.player_id < 0: return 0
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'Player.GetProperties',
@@ -496,7 +497,9 @@ class KodiPlaying():
                                port=self.port)
         try:
             duration = (int(js['result']['totaltime']['hours']) * 60 * 60) + (int(js['result']['totaltime']['minutes']) * 60) + int(js['result']['totaltime']['seconds'])
-            return (duration, (duration * (float(js['result']['percentage']) / 100)))
+            played = duration * (float(js['result']['percentage']) / 100)
+            left = duration - played
+            return (duration, played, left)
         except:
             return (0, 0)
     
@@ -617,12 +620,12 @@ class KodiPlaying():
     
     def show_current(self, widget=None):
         """ Show last played song. """
-        self.show_song_info(1)
+        self.show_song_info()
         if exists(self.tmp_thumb):
             os.remove(self.tmp_thumb)
         
     def show_index(self, widget, index):
-        """ Menu function to call show_song_info with index. """
+        """ Deprecated: Menu function to call show_song_info with index. """
         self.show_song_info(index=index)
         
     def play_pause(self, widget=None):
