@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-24 19:44+0100\n"
+"POT-Creation-Date: 2021-01-26 19:27+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/abalfoort/teams/54212/nl/)\n"
@@ -45,27 +45,31 @@ msgstr "Aflevering"
 msgid "Series"
 msgstr "Serie"
 
-#: kodi-playing/kodi.py:553
+#: kodi-playing/kodi.py:257
+msgid "Time left"
+msgstr "Tijd over"
+
+#: kodi-playing/kodi.py:556
 msgid "Show played songs"
 msgstr "Toon gespeelde nummers"
 
-#: kodi-playing/kodi.py:556
+#: kodi-playing/kodi.py:559
 msgid "Shut down"
 msgstr "Uitschakelen"
 
-#: kodi-playing/kodi.py:559
+#: kodi-playing/kodi.py:562
 msgid "Reboot"
 msgstr "Herstarten"
 
-#: kodi-playing/kodi.py:563
+#: kodi-playing/kodi.py:566
 msgid "Settings"
 msgstr "Instellingen"
 
-#: kodi-playing/kodi.py:571
+#: kodi-playing/kodi.py:574
 msgid "Now playing"
 msgstr "Speelt nu af"
 
-#: kodi-playing/kodi.py:584
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr "Afsluiten"
 
