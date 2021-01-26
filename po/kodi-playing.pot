@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-24 19:44+0100\n"
+"POT-Creation-Date: 2021-01-26 19:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,27 +41,31 @@ msgstr ""
 msgid "Series"
 msgstr ""
 
-#: kodi-playing/kodi.py:553
-msgid "Show played songs"
+#: kodi-playing/kodi.py:257
+msgid "Time left"
 msgstr ""
 
 #: kodi-playing/kodi.py:556
-msgid "Shut down"
+msgid "Show played songs"
 msgstr ""
 
 #: kodi-playing/kodi.py:559
+msgid "Shut down"
+msgstr ""
+
+#: kodi-playing/kodi.py:562
 msgid "Reboot"
 msgstr ""
 
-#: kodi-playing/kodi.py:563
+#: kodi-playing/kodi.py:566
 msgid "Settings"
 msgstr ""
 
-#: kodi-playing/kodi.py:571
+#: kodi-playing/kodi.py:574
 msgid "Now playing"
 msgstr ""
 
-#: kodi-playing/kodi.py:584
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr ""
 
