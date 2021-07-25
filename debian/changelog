@@ -1,3 +1,15 @@
+kodi-playing (1.1.9) stable; urgency=low
+
+  * Updated translation: ca
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Wed, 14 Apr 2021 08:34:35 +0200
+
+kodi-playing (1.1.8) stable; urgency=low
+
+  * Updated translation: de
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Tue, 13 Apr 2021 18:01:40 +0200
+
 kodi-playing (1.1.7) stable; urgency=low
 
   * Remove time played from notification
