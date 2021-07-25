@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-23 17:17+0100\n"
+"POT-Creation-Date: 2021-01-28 18:39+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Slobodan Simić <slsimic@gmail.com>, 2021\n"
 "Language-Team: Serbian (https://www.transifex.com/abalfoort/teams/54212/"
@@ -27,39 +27,51 @@ msgstr ""
 msgid "Unable to connect to:"
 msgstr "Не могу да се повежем са:"
 
-#: kodi-playing/kodi.py:240
+#: kodi-playing/kodi.py:252
 msgid "Artist"
 msgstr "Извођач"
 
-#: kodi-playing/kodi.py:241
+#: kodi-playing/kodi.py:253
 msgid "Album"
 msgstr "Албум"
 
-#: kodi-playing/kodi.py:242
-msgid "Time"
-msgstr "Време"
+#: kodi-playing/kodi.py:254
+msgid "Duration"
+msgstr "Трајање"
 
-#: kodi-playing/kodi.py:525
+#: kodi-playing/kodi.py:255
+msgid "Episode"
+msgstr "Епизода"
+
+#: kodi-playing/kodi.py:256
+msgid "Series"
+msgstr "Серијал"
+
+#: kodi-playing/kodi.py:257
+msgid "Time left"
+msgstr "Преостало време"
+
+#: kodi-playing/kodi.py:556
 msgid "Show played songs"
 msgstr "Прикажи пуштане песме"
 
-#: kodi-playing/kodi.py:528
+#: kodi-playing/kodi.py:559
 msgid "Shut down"
 msgstr "Угаси"
 
-#: kodi-playing/kodi.py:531
+#: kodi-playing/kodi.py:562
 msgid "Reboot"
 msgstr "Поново покрени"
 
-#: kodi-playing/kodi.py:535
+#: kodi-playing/kodi.py:566
 msgid "Settings"
 msgstr "Поставке"
 
-#: kodi-playing/kodi.py:543
+#: kodi-playing/kodi.py:574
 msgid "Now playing"
 msgstr "Сада се пушта"
 
-#: kodi-playing/kodi.py:556
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr "Напусти"
 

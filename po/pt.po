@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-13 10:26+0100\n"
+"POT-Creation-Date: 2021-01-26 19:27+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2021\n"
 "Language-Team: Portuguese (https://www.transifex.com/abalfoort/teams/54212/"
@@ -22,42 +22,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kodi-playing/kodi.py:225
+#: kodi-playing/kodi.py:128
+msgid "Unable to connect to:"
+msgstr ""
+
+#: kodi-playing/kodi.py:252
 msgid "Artist"
 msgstr "Artista"
 
-#: kodi-playing/kodi.py:226
+#: kodi-playing/kodi.py:253
 msgid "Album"
 msgstr "Album"
 
-#: kodi-playing/kodi.py:227
-msgid "Time"
+#: kodi-playing/kodi.py:254
+msgid "Duration"
+msgstr ""
+
+#: kodi-playing/kodi.py:255
+msgid "Episode"
+msgstr ""
+
+#: kodi-playing/kodi.py:256
+msgid "Series"
+msgstr ""
+
+#: kodi-playing/kodi.py:257
+#, fuzzy
+msgid "Time left"
 msgstr "Tempo"
 
-#: kodi-playing/kodi.py:393
-msgid "Current song"
-msgstr "Canção actual"
-
-#: kodi-playing/kodi.py:398
-msgid "Song by index"
-msgstr "Índice por canção"
-
-#: kodi-playing/kodi.py:400
-msgid "previous"
-msgstr "anterior"
-
-#: kodi-playing/kodi.py:426
+#: kodi-playing/kodi.py:556
 msgid "Show played songs"
 msgstr "Mostar as canções tocadas"
 
-#: kodi-playing/kodi.py:430
-msgid "Edit settings"
+#: kodi-playing/kodi.py:559
+msgid "Shut down"
+msgstr ""
+
+#: kodi-playing/kodi.py:562
+msgid "Reboot"
+msgstr ""
+
+#: kodi-playing/kodi.py:566
+#, fuzzy
+msgid "Settings"
 msgstr "Editar as configurações"
 
-#: kodi-playing/kodi.py:436
+#: kodi-playing/kodi.py:574
+#, fuzzy
+msgid "Now playing"
+msgstr "Mostar as canções tocadas"
+
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr "Sair"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
 msgstr "Notificação sobre o que toca no Kodi"
+
+#~ msgid "Current song"
+#~ msgstr "Canção actual"
+
+#~ msgid "Song by index"
+#~ msgstr "Índice por canção"
+
+#~ msgid "previous"
+#~ msgstr "anterior"

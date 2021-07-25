@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-09 12:47+0100\n"
+"POT-Creation-Date: 2021-04-14 08:34+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Eduard Selma <selma@tinet.cat>, 2021\n"
 "Language-Team: Catalan (https://www.transifex.com/abalfoort/teams/54212/"
@@ -22,39 +22,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kodi-playing/kodi.py:224
+#: kodi-playing/kodi.py:128
+msgid "Unable to connect to:"
+msgstr "No puc connectar a: "
+
+#: kodi-playing/kodi.py:252
 msgid "Artist"
 msgstr "Artista"
 
-#: kodi-playing/kodi.py:225
+#: kodi-playing/kodi.py:253
 msgid "Album"
 msgstr "Àlbum"
 
-#: kodi-playing/kodi.py:226
-msgid "Time"
-msgstr "Temps"
+#: kodi-playing/kodi.py:254
+msgid "Duration"
+msgstr "Durada"
 
-#: kodi-playing/kodi.py:392
-msgid "Current song"
-msgstr "Cançó actual"
+#: kodi-playing/kodi.py:255
+msgid "Episode"
+msgstr "Episodi"
 
-#: kodi-playing/kodi.py:397
-msgid "Song by index"
-msgstr "Cançó per índex"
+#: kodi-playing/kodi.py:256
+msgid "Series"
+msgstr "Sèries"
 
-#: kodi-playing/kodi.py:399
-msgid "previous"
-msgstr "anterior"
+#: kodi-playing/kodi.py:257
+msgid "Time left"
+msgstr "Temps restant"
 
-#: kodi-playing/kodi.py:425
+#: kodi-playing/kodi.py:556
 msgid "Show played songs"
-msgstr ""
+msgstr "Mostra les peces reproduïdes "
 
-#: kodi-playing/kodi.py:429
-msgid "Edit settings"
-msgstr "Edita els paràmetres"
+#: kodi-playing/kodi.py:559
+msgid "Shut down"
+msgstr "Tanca"
 
-#: kodi-playing/kodi.py:435
+#: kodi-playing/kodi.py:562
+msgid "Reboot"
+msgstr "Arrenca de nou"
+
+#: kodi-playing/kodi.py:566
+msgid "Settings"
+msgstr "Paràmetres"
+
+#: kodi-playing/kodi.py:574
+msgid "Now playing"
+msgstr "Reproduint ara"
+
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr "Surt"
 

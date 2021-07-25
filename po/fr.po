@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-21 23:02+0100\n"
+"POT-Creation-Date: 2021-01-26 19:27+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Gaïus Baltar <ichbin1199@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/abalfoort/teams/54212/fr/)\n"
@@ -21,50 +21,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: kodi-playing/kodi.py:122
+#: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
 msgstr "Echec de la connexion à: "
 
-#: kodi-playing/kodi.py:233
+#: kodi-playing/kodi.py:252
 msgid "Artist"
 msgstr "Artiste"
 
-#: kodi-playing/kodi.py:234
+#: kodi-playing/kodi.py:253
 msgid "Album"
 msgstr "Album"
 
-#: kodi-playing/kodi.py:235
-msgid "Time"
+#: kodi-playing/kodi.py:254
+msgid "Duration"
+msgstr ""
+
+#: kodi-playing/kodi.py:255
+msgid "Episode"
+msgstr ""
+
+#: kodi-playing/kodi.py:256
+msgid "Series"
+msgstr ""
+
+#: kodi-playing/kodi.py:257
+#, fuzzy
+msgid "Time left"
 msgstr "Temps"
 
-#: kodi-playing/kodi.py:468
-msgid "Current song"
-msgstr "Titre actuel"
-
-#: kodi-playing/kodi.py:473
-msgid "Song by index"
-msgstr "Titres par index"
-
-#: kodi-playing/kodi.py:475
-msgid "previous"
-msgstr "précédent"
-
-#: kodi-playing/kodi.py:501
+#: kodi-playing/kodi.py:556
 msgid "Show played songs"
 msgstr "Affichage des titres joués"
 
-#: kodi-playing/kodi.py:505
-msgid "Edit settings"
-msgstr "Modifier les paramètres"
-
-#: kodi-playing/kodi.py:511
-msgid "Quit"
-msgstr "Quitter"
-
-#: kodi-playing/kodi.py:515
+#: kodi-playing/kodi.py:559
 msgid "Shut down"
 msgstr ""
+
+#: kodi-playing/kodi.py:562
+msgid "Reboot"
+msgstr ""
+
+#: kodi-playing/kodi.py:566
+#, fuzzy
+msgid "Settings"
+msgstr "Modifier les paramètres"
+
+#: kodi-playing/kodi.py:574
+#, fuzzy
+msgid "Now playing"
+msgstr "Affichage des titres joués"
+
+#: kodi-playing/kodi.py:587
+msgid "Quit"
+msgstr "Quitter"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
 msgstr "Notification de ce qui est joué sur Kodi"
+
+#~ msgid "Current song"
+#~ msgstr "Titre actuel"
+
+#~ msgid "Song by index"
+#~ msgstr "Titres par index"
+
+#~ msgid "previous"
+#~ msgstr "précédent"

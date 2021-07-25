@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-03 13:57+0100\n"
+"POT-Creation-Date: 2021-01-26 19:27+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/abalfoort/teams/54212/"
@@ -23,30 +23,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kodi-playing/__init__.py:238
+#: kodi-playing/kodi.py:128
+msgid "Unable to connect to:"
+msgstr ""
+
+#: kodi-playing/kodi.py:252
+msgid "Artist"
+msgstr ""
+
+#: kodi-playing/kodi.py:253
+msgid "Album"
+msgstr ""
+
+#: kodi-playing/kodi.py:254
+msgid "Duration"
+msgstr ""
+
+#: kodi-playing/kodi.py:255
+msgid "Episode"
+msgstr ""
+
+#: kodi-playing/kodi.py:256
+msgid "Series"
+msgstr ""
+
+#: kodi-playing/kodi.py:257
+msgid "Time left"
+msgstr ""
+
+#: kodi-playing/kodi.py:556
+#, fuzzy
+msgid "Show played songs"
+msgstr "In riproduzione"
+
+#: kodi-playing/kodi.py:559
+msgid "Shut down"
+msgstr ""
+
+#: kodi-playing/kodi.py:562
+msgid "Reboot"
+msgstr ""
+
+#: kodi-playing/kodi.py:566
+#, fuzzy
+msgid "Settings"
+msgstr "Modifica le impostazioni"
+
+#: kodi-playing/kodi.py:574
+#, fuzzy
 msgid "Now playing"
 msgstr "In riproduzione"
 
-#: kodi-playing/__init__.py:243
-msgid "Song by index"
-msgstr ""
-
-#: kodi-playing/__init__.py:245
-msgid "previous"
-msgstr ""
-
-#: kodi-playing/__init__.py:262
-msgid "Show log"
-msgstr "Mostra log"
-
-#: kodi-playing/__init__.py:266
-msgid "Edit settings"
-msgstr "Modifica le impostazioni"
-
-#: kodi-playing/__init__.py:272
+#: kodi-playing/kodi.py:587
 msgid "Quit"
 msgstr "Esci"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
 msgstr "Notifica di cosa è in riproduzione su Kodi"
+
+#~ msgid "Show log"
+#~ msgstr "Mostra log"

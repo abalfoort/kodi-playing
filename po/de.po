@@ -4,19 +4,18 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # Translators:
-# Luis Filipe Teixeira <lufilte@gmail.com>, 2021
+# pitfd, 2021
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 19:27+0100\n"
+"POT-Creation-Date: 2021-04-13 18:07+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
-"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2021\n"
-"Language-Team: Portuguese (Portugal) (https://www.transifex.com/abalfoort/"
-"teams/54212/pt_PT/)\n"
-"Language: pt_PT\n"
+"Last-Translator: pitfd, 2021\n"
+"Language-Team: German (https://www.transifex.com/abalfoort/teams/54212/de/)\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,11 +23,11 @@ msgstr ""
 
 #: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
-msgstr ""
+msgstr "Verbindung kann nicht hergestellt werden zu:"
 
 #: kodi-playing/kodi.py:252
 msgid "Artist"
-msgstr "Artista"
+msgstr "Künstler"
 
 #: kodi-playing/kodi.py:253
 msgid "Album"
@@ -36,56 +35,44 @@ msgstr "Album"
 
 #: kodi-playing/kodi.py:254
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #: kodi-playing/kodi.py:255
 msgid "Episode"
-msgstr ""
+msgstr "Episode"
 
 #: kodi-playing/kodi.py:256
 msgid "Series"
-msgstr ""
+msgstr "Serie"
 
 #: kodi-playing/kodi.py:257
-#, fuzzy
 msgid "Time left"
-msgstr "Tempo"
+msgstr "verbleibende Zeit"
 
 #: kodi-playing/kodi.py:556
 msgid "Show played songs"
-msgstr "Mostar as canções tocadas"
+msgstr "Gespielte Titel anzeigen"
 
 #: kodi-playing/kodi.py:559
 msgid "Shut down"
-msgstr ""
+msgstr "Herunterfahren"
 
 #: kodi-playing/kodi.py:562
 msgid "Reboot"
-msgstr ""
+msgstr "Neustart"
 
 #: kodi-playing/kodi.py:566
-#, fuzzy
 msgid "Settings"
-msgstr "Editar as configurações"
+msgstr "Einstellungen"
 
 #: kodi-playing/kodi.py:574
-#, fuzzy
 msgid "Now playing"
-msgstr "Mostar as canções tocadas"
+msgstr "Wird gerade abgespielt"
 
 #: kodi-playing/kodi.py:587
 msgid "Quit"
-msgstr "Sair"
+msgstr "Verlassen"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
-msgstr "Notificação sobre o que toca no Kodi"
-
-#~ msgid "Current song"
-#~ msgstr "Canção atual"
-
-#~ msgid "Song by index"
-#~ msgstr "Índice por canção"
-
-#~ msgid "previous"
-#~ msgstr "anterior"
+msgstr "Benachrichtigung darüber, was auf Kodi abgespielt wird"
