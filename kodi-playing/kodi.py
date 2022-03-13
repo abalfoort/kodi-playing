@@ -28,7 +28,7 @@ import csv
 import subprocess
 import datetime
 import json
-import socket
+#import socket
 from shutil import copyfile
 from time import gmtime, strftime, sleep
 from pathlib import Path
@@ -116,21 +116,22 @@ class KodiPlaying():
         # Initiate variables
         prev_title = ''
         prev_thumbnail_path = ''
-        unable_notification = False
+        was_connected = False
         
         while not self.check_done_event.is_set():
             # Check if kodi server is online
             if not self.is_connected(self.address, self.port):
-                if not unable_notification:
+                # Show lost connection message
+                if was_connected:
                     self.player_id = -1
                     self.indicator.set_menu(self.build_menu())
                     self.indicator.set_icon_full(self.grey_icon, '')
                     self.show_notification(summary="%s %s:%s" % (_("Unable to connect to:"), self.address, self.port), 
                                            thumb='kodi-playing')
-                    unable_notification = True
+                    was_connected = False
             else:
                 # In case we loose connection later on
-                unable_notification = False
+                was_connected = True
                 
                 # Save player id (-1: no active players)
                 old_player_id = self.player_id
@@ -522,15 +523,22 @@ class KodiPlaying():
         """ Check if Kodi server is online. """
         if not host:
             return False
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-            sock.settimeout(self.wait)
-            try:
-                if sock.connect_ex((host, port)) == 0:
-                    return True
-                else:
-                    return False
-            except:
-                return False
+        try:
+            if urlopen("http://%s:%s" % (host, port)).getcode() == 200:
+                return True
+            return False
+        except:
+            return False
+        
+#         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+#             sock.settimeout(self.wait)
+#             try:
+#                 if sock.connect_ex((host, port)) == 0:
+#                     return True
+#                 else:
+#                     return False
+#             except:
+#                 return False
 
     def search_kodi(self):
         """ Search local network for Kodi servers. """
