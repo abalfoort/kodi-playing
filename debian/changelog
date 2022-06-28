@@ -1,3 +1,15 @@
+kodi-playing (1.2.3) stable; urgency=low
+
+  * Updated translation: es_419 (latin america)
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Tue, 28 Jun 2022 12:00:52 +0200
+
+kodi-playing (1.2.2) stable; urgency=low
+
+  * Updated translation: pt
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Sat, 16 Apr 2022 07:48:29 +0200
+
 kodi-playing (1.2.1) stable; urgency=low
 
   * Only show No Connection message after lost connection

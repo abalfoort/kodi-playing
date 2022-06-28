@@ -4,16 +4,17 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # Translators:
-# Luis Filipe Teixeira <lufilte@gmail.com>, 2021
+# Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021
+# Luis Filipe Teixeira <lufilte@gmail.com>, 2022
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 19:27+0100\n"
+"POT-Creation-Date: 2022-04-16 07:48+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
-"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2021\n"
+"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2022\n"
 "Language-Team: Portuguese (https://www.transifex.com/abalfoort/teams/54212/"
 "pt/)\n"
 "Language: pt\n"
@@ -24,7 +25,7 @@ msgstr ""
 
 #: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
-msgstr ""
+msgstr "Impossivel de conectar a:"
 
 #: kodi-playing/kodi.py:252
 msgid "Artist"
@@ -36,56 +37,44 @@ msgstr "Album"
 
 #: kodi-playing/kodi.py:254
 msgid "Duration"
-msgstr ""
+msgstr "Duração"
 
 #: kodi-playing/kodi.py:255
 msgid "Episode"
-msgstr ""
+msgstr "Episódio"
 
 #: kodi-playing/kodi.py:256
 msgid "Series"
-msgstr ""
+msgstr "Séries"
 
 #: kodi-playing/kodi.py:257
-#, fuzzy
 msgid "Time left"
-msgstr "Tempo"
+msgstr "Tempo restante"
 
-#: kodi-playing/kodi.py:556
+#: kodi-playing/kodi.py:563
 msgid "Show played songs"
 msgstr "Mostar as canções tocadas"
 
-#: kodi-playing/kodi.py:559
-msgid "Shut down"
-msgstr ""
-
-#: kodi-playing/kodi.py:562
-msgid "Reboot"
-msgstr ""
-
 #: kodi-playing/kodi.py:566
-#, fuzzy
+msgid "Shut down"
+msgstr "Desligar"
+
+#: kodi-playing/kodi.py:569
+msgid "Reboot"
+msgstr "Reiniciar"
+
+#: kodi-playing/kodi.py:573
 msgid "Settings"
-msgstr "Editar as configurações"
+msgstr "Configurações"
 
-#: kodi-playing/kodi.py:574
-#, fuzzy
+#: kodi-playing/kodi.py:581
 msgid "Now playing"
-msgstr "Mostar as canções tocadas"
+msgstr "A tocar agora"
 
-#: kodi-playing/kodi.py:587
+#: kodi-playing/kodi.py:594
 msgid "Quit"
 msgstr "Sair"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
 msgstr "Notificação sobre o que toca no Kodi"
-
-#~ msgid "Current song"
-#~ msgstr "Canção actual"
-
-#~ msgid "Song by index"
-#~ msgstr "Índice por canção"
-
-#~ msgid "previous"
-#~ msgstr "anterior"
