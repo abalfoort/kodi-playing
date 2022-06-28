@@ -45,10 +45,9 @@ except:
 
 APPINDICATOR_ID = 'kodi-playing'
 
-
+# i18n: http://docs.python.org/3/library/gettext.html
 import gettext
-from gettext import gettext as _
-gettext.textdomain(APPINDICATOR_ID)
+_ = gettext.translation(APPINDICATOR_ID, fallback=True).gettext
 
 
 class KodiPlaying():
