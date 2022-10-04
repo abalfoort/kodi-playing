@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 19:27+0100\n"
+"POT-Creation-Date: 2022-09-15 14:30+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Moo, 2021\n"
 "Language-Team: Lithuanian (https://www.transifex.com/abalfoort/teams/54212/"
@@ -28,54 +28,54 @@ msgstr ""
 msgid "Unable to connect to:"
 msgstr ""
 
-#: kodi-playing/kodi.py:252
+#: kodi-playing/kodi.py:253
 msgid "Artist"
 msgstr ""
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:254
 msgid "Album"
 msgstr ""
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:255
 msgid "Duration"
 msgstr ""
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:256
 msgid "Episode"
 msgstr ""
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:257
 msgid "Series"
 msgstr ""
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:258
 msgid "Time left"
 msgstr ""
 
-#: kodi-playing/kodi.py:556
+#: kodi-playing/kodi.py:590
 #, fuzzy
 msgid "Show played songs"
 msgstr "Dabar atkuriama"
 
-#: kodi-playing/kodi.py:559
+#: kodi-playing/kodi.py:593
 msgid "Shut down"
 msgstr ""
 
-#: kodi-playing/kodi.py:562
+#: kodi-playing/kodi.py:596
 msgid "Reboot"
 msgstr ""
 
-#: kodi-playing/kodi.py:566
+#: kodi-playing/kodi.py:600
 #, fuzzy
 msgid "Settings"
 msgstr "Taisyti nustatymus"
 
-#: kodi-playing/kodi.py:574
+#: kodi-playing/kodi.py:608
 #, fuzzy
 msgid "Now playing"
 msgstr "Dabar atkuriama"
 
-#: kodi-playing/kodi.py:587
+#: kodi-playing/kodi.py:621
 msgid "Quit"
 msgstr "Išeiti"
 

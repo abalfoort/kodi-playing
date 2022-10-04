@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-16 07:48+0200\n"
+"POT-Creation-Date: 2022-09-15 14:30+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2022\n"
 "Language-Team: Portuguese (https://www.transifex.com/abalfoort/teams/54212/"
@@ -27,51 +27,51 @@ msgstr ""
 msgid "Unable to connect to:"
 msgstr "Impossivel de conectar a:"
 
-#: kodi-playing/kodi.py:252
+#: kodi-playing/kodi.py:253
 msgid "Artist"
 msgstr "Artista"
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:254
 msgid "Album"
 msgstr "Album"
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:255
 msgid "Duration"
 msgstr "Duração"
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:256
 msgid "Episode"
 msgstr "Episódio"
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:257
 msgid "Series"
 msgstr "Séries"
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:258
 msgid "Time left"
 msgstr "Tempo restante"
 
-#: kodi-playing/kodi.py:563
+#: kodi-playing/kodi.py:590
 msgid "Show played songs"
 msgstr "Mostar as canções tocadas"
 
-#: kodi-playing/kodi.py:566
+#: kodi-playing/kodi.py:593
 msgid "Shut down"
 msgstr "Desligar"
 
-#: kodi-playing/kodi.py:569
+#: kodi-playing/kodi.py:596
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#: kodi-playing/kodi.py:573
+#: kodi-playing/kodi.py:600
 msgid "Settings"
 msgstr "Configurações"
 
-#: kodi-playing/kodi.py:581
+#: kodi-playing/kodi.py:608
 msgid "Now playing"
 msgstr "A tocar agora"
 
-#: kodi-playing/kodi.py:594
+#: kodi-playing/kodi.py:621
 msgid "Quit"
 msgstr "Sair"
 

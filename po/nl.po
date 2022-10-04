@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 19:27+0100\n"
+"POT-Creation-Date: 2022-09-15 14:30+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/abalfoort/teams/54212/nl/)\n"
@@ -25,51 +25,51 @@ msgstr ""
 msgid "Unable to connect to:"
 msgstr "Niet in staat te verbinden:"
 
-#: kodi-playing/kodi.py:252
+#: kodi-playing/kodi.py:253
 msgid "Artist"
 msgstr "Artiest"
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:254
 msgid "Album"
 msgstr "Album"
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:255
 msgid "Duration"
 msgstr "Duur"
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:256
 msgid "Episode"
 msgstr "Aflevering"
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:257
 msgid "Series"
 msgstr "Serie"
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:258
 msgid "Time left"
 msgstr "Tijd over"
 
-#: kodi-playing/kodi.py:556
+#: kodi-playing/kodi.py:590
 msgid "Show played songs"
 msgstr "Toon gespeelde nummers"
 
-#: kodi-playing/kodi.py:559
+#: kodi-playing/kodi.py:593
 msgid "Shut down"
 msgstr "Uitschakelen"
 
-#: kodi-playing/kodi.py:562
+#: kodi-playing/kodi.py:596
 msgid "Reboot"
 msgstr "Herstarten"
 
-#: kodi-playing/kodi.py:566
+#: kodi-playing/kodi.py:600
 msgid "Settings"
 msgstr "Instellingen"
 
-#: kodi-playing/kodi.py:574
+#: kodi-playing/kodi.py:608
 msgid "Now playing"
 msgstr "Speelt nu af"
 
-#: kodi-playing/kodi.py:587
+#: kodi-playing/kodi.py:621
 msgid "Quit"
 msgstr "Afsluiten"
 

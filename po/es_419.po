@@ -2,74 +2,76 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # F A <jaw2pc@gmail.com>, 2022
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-16 07:48+0200\n"
+"POT-Creation-Date: 2022-09-15 14:30+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: F A <jaw2pc@gmail.com>, 2022\n"
-"Language-Team: Spanish (Latin America) (https://www.transifex.com/abalfoort/teams/54212/es_419/)\n"
+"Language-Team: Spanish (Latin America) (https://www.transifex.com/abalfoort/"
+"teams/54212/es_419/)\n"
+"Language: es_419\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_419\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 
 #: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
 msgstr "No se puede conectar a:"
 
-#: kodi-playing/kodi.py:252
+#: kodi-playing/kodi.py:253
 msgid "Artist"
 msgstr "Artista"
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:254
 msgid "Album"
 msgstr "Álbum"
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:255
 msgid "Duration"
 msgstr "Duración"
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:256
 msgid "Episode"
 msgstr "Episodio"
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:257
 msgid "Series"
 msgstr "Series"
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:258
 msgid "Time left"
 msgstr "Tiempo restante"
 
-#: kodi-playing/kodi.py:563
+#: kodi-playing/kodi.py:590
 msgid "Show played songs"
 msgstr "Mostrar canciones reproducidas"
 
-#: kodi-playing/kodi.py:566
+#: kodi-playing/kodi.py:593
 msgid "Shut down"
 msgstr "Apagar"
 
-#: kodi-playing/kodi.py:569
+#: kodi-playing/kodi.py:596
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#: kodi-playing/kodi.py:573
+#: kodi-playing/kodi.py:600
 msgid "Settings"
 msgstr "Configuraciones"
 
-#: kodi-playing/kodi.py:581
+#: kodi-playing/kodi.py:608
 msgid "Now playing"
 msgstr "Ahora reproduciendo"
 
-#: kodi-playing/kodi.py:594
+#: kodi-playing/kodi.py:621
 msgid "Quit"
 msgstr "Salir"
 
