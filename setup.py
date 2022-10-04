@@ -4,7 +4,8 @@
 # https://docs.python.org/3.8/distutils/setupscript.html
 
 from distutils.core import setup
-import pathlib, os
+import pathlib
+import os
 
 # Set these variables
 PACKAGE_NAME='kodi-playing'
@@ -20,15 +21,15 @@ DATA_FILES=[
 # Load the package's version.py module as a dictionary.
 about = {}
 here = pathlib.Path(__file__).parent.resolve()
-with open(os.path.join(here, 'version.py')) as f:
+with open(file=os.path.join(here, 'version.py'), mode='r', encoding='utf-8') as f:
     exec(f.read(), about)
-    
+
 # Get the long description from the README file
 try:
     long_description = (here / 'README.md').read_text(encoding='utf-8')
 except FileNotFoundError:
     long_description = about['__description__']
-    
+
 setup(
     # Meta data
     name=about['__title__'],
@@ -65,7 +66,7 @@ setup(
     ],
     platforms   = 'POSIX',
     license     = 'GNU General Public License v2 or later (GPLv2+)',
-    
+
     # Package data
     packages=[PACKAGE_NAME],
     package_dir={PACKAGE_NAME: PACKAGE_DIR},

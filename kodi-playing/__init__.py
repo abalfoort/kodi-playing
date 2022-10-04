@@ -1,68 +1,82 @@
 #!/usr/bin/env python3 -OO
-# -OO: Turn on basic optimizations.  Given twice, causes docstrings to be discarded.
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
+""" Initialize KodiPlaying class """
+# -OO: Turn on basic optimizations.  Given twice, causes docstrings to be discarded.
 
 import sys
 import subprocess
 import getpass
 import signal
+import traceback
+from pathlib import Path
 from os.path import join
 try:
     from .kodi import KodiPlaying
     from .dialogs import ErrorDialog
-except:
+except ImportError:
     from kodi import KodiPlaying
     from dialogs import ErrorDialog
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+CAN_DEBUG = False
+if __debug__:
+    from pprint import pprint
+    from types import BuiltinFunctionType, ModuleType
+    if sys.stdin.isatty() and (sys.stdout.isatty() or sys.stderr.isatty()):
+        try:
+            import ipdb as pdb  # try to import the IPython debugger
+            CAN_DEBUG = True
+        except ImportError:
+            try:
+                import pdb
+                CAN_DEBUG = True
+            except ImportError:
+                pass
+
+# python3 TYPE fix
+class _C:
+    def _m(self):
+        pass
+ClassType = type(_C)
+TypeType = type
+
 def uncaught_excepthook(*args):
+    """Exception hook function"""
     sys.__excepthook__(*args)
     if __debug__:
-        from pprint import pprint
-        from types import BuiltinFunctionType, ClassType, ModuleType, TypeType
         tb = sys.last_traceback
-        while tb.tb_next: tb = tb.tb_next
+        while tb.tb_next:
+            tb = tb.tb_next
         print(('\nDumping locals() ...'))
         pprint({k:v for k,v in tb.tb_frame.f_locals.items()
                     if not k.startswith('_') and
                        not isinstance(v, (BuiltinFunctionType,
                                           ClassType, ModuleType, TypeType))})
-        if sys.stdin.isatty() and (sys.stdout.isatty() or sys.stderr.isatty()):
-            can_debug = False
-            try:
-                import ipdb as pdb  # try to import the IPython debugger
-                can_debug = True
-            except ImportError:
-                try:
-                    import pdb as pdb
-                    can_debug = True
-                except ImportError:
-                    pass
 
-            if can_debug:
-                print(('\nStarting interactive debug prompt ...'))
-                pdb.pm()
+        if CAN_DEBUG:
+            print(('\nStarting interactive debug prompt ...'))
+            pdb.pm()
     else:
-        import traceback
-        from pathlib import Path
         details = '\n'.join(traceback.format_exception(*args)).replace('<', '').replace('>', '')
         # Save to error file
         error_file = join(Path.home(), ".kodi-playing/error.log")
-        with open(error_file, 'w') as f:
+        with open(file=error_file, mode='w', encoding='utf-8') as f:
             f.write(details)
         title = 'Unexpected error'
-        msg = "Please submit a bug report: %s" % error_file
-        ErrorDialog(title, "<b>%s</b>" % msg, "<tt>%s</tt>" % details, None, True)
+        msg = f"Please submit a bug report: {error_file}"
+        ErrorDialog(title, f"<b>{msg}</b>" , f"<tt>{details}</tt>", None, True)
 
     sys.exit(1)
 
 sys.excepthook = uncaught_excepthook
 
 def main():
+    """Main function initiating KodiPlaying class"""
     # Check if already running
-    cmd = "pgrep -u %s -f 'python3 .*kodi-playing'" % getpass.getuser()
+    cmd = f"pgrep -u {getpass.getuser()} -f 'python3 .*kodi-playing'"
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid, err = process.communicate()
     if len(pid.splitlines()) > 1:
@@ -71,6 +85,6 @@ def main():
         KodiPlaying()
         signal.signal(signal.SIGINT, signal.SIG_DFL)
         Gtk.main()
-    
+
 if __name__ == '__main__':
     main()

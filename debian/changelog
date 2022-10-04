@@ -1,3 +1,9 @@
+kodi-playing (1.2.4) stable; urgency=low
+
+  * Cleanup code
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Sat, 10 Sep 2022 19:54:03 +0200
+
 kodi-playing (1.2.3) stable; urgency=low
 
   * Updated translation: es_419 (latin america)
