@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # Translators:
-# Moo, 2021
+# Moo, 2023
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-15 14:30+0200\n"
+"POT-Creation-Date: 2023-01-18 19:21+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
-"Last-Translator: Moo, 2021\n"
+"Last-Translator: Moo, 2023\n"
 "Language-Team: Lithuanian (https://www.transifex.com/abalfoort/teams/54212/"
 "lt/)\n"
 "Language: lt\n"
@@ -26,52 +26,49 @@ msgstr ""
 
 #: kodi-playing/kodi.py:128
 msgid "Unable to connect to:"
-msgstr ""
+msgstr "Nepavyko prisijungti prie:"
 
 #: kodi-playing/kodi.py:253
 msgid "Artist"
-msgstr ""
+msgstr "Atlikėjas"
 
 #: kodi-playing/kodi.py:254
 msgid "Album"
-msgstr ""
+msgstr "Albumas"
 
 #: kodi-playing/kodi.py:255
 msgid "Duration"
-msgstr ""
+msgstr "Trukmė"
 
 #: kodi-playing/kodi.py:256
 msgid "Episode"
-msgstr ""
+msgstr "Serija"
 
 #: kodi-playing/kodi.py:257
 msgid "Series"
-msgstr ""
+msgstr "Serialas"
 
 #: kodi-playing/kodi.py:258
 msgid "Time left"
-msgstr ""
+msgstr "Liko laiko"
 
 #: kodi-playing/kodi.py:590
-#, fuzzy
 msgid "Show played songs"
-msgstr "Dabar atkuriama"
+msgstr "Rodyti atkurtas dainas"
 
 #: kodi-playing/kodi.py:593
 msgid "Shut down"
-msgstr ""
+msgstr "Išjungti"
 
 #: kodi-playing/kodi.py:596
 msgid "Reboot"
-msgstr ""
+msgstr "Paleisti iš naujo"
 
 #: kodi-playing/kodi.py:600
-#, fuzzy
 msgid "Settings"
-msgstr "Taisyti nustatymus"
+msgstr "Nustatymai"
 
 #: kodi-playing/kodi.py:608
-#, fuzzy
 msgid "Now playing"
 msgstr "Dabar atkuriama"
 
@@ -82,12 +79,3 @@ msgstr "Išeiti"
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
 msgstr "Pranešimas apie tai, ką atkuria Kodi"
-
-#~ msgid "Song by index"
-#~ msgstr "Daina pagal indeksą"
-
-#~ msgid "previous"
-#~ msgstr "ankstesnis"
-
-#~ msgid "Show log"
-#~ msgstr "Rodyti žurnalą"
