@@ -1,9 +1,9 @@
 [main]
 host = https://www.transifex.com
-minimum_perc = 80
 
-[kodi-playing.kodi-playingpot]
-source_file = po/kodi-playing.pot
+[o:abalfoort:p:kodi-playing:r:kodi-playingpot]
 file_filter = po/<lang>.po
+source_file = po/kodi-playing.pot
 source_lang = en
-type = PO
+type        = PO
+
