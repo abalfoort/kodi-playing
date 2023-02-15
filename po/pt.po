@@ -4,17 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 # Translators:
-# Arjen Balfoort <arjenbalfoort@hotmail.com>, 2021
-# Luis Filipe Teixeira <lufilte@gmail.com>, 2022
+# Arjen Balfoort <arjenbalfoort@hotmail.com>, 2023
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-27 16:56+0100\n"
+"POT-Creation-Date: 2023-02-15 09:37+0100\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
-"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>, 2022\n"
+"Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2023\n"
 "Language-Team: Portuguese (https://www.transifex.com/abalfoort/teams/54212/"
 "pt/)\n"
 "Language: pt\n"
