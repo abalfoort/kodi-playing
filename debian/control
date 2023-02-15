@@ -5,7 +5,6 @@ Maintainer: Arjen Balfoort <arjenbalfoort@hotmail.com>
 Build-Depends: debhelper-compat (= 12)
   , dh-python
   , python3-all
-  , transifex-client
   , translate-toolkit
 Standards-Version: 4.5.0
 Vcs-Git: https://gitlab.com/abalfoort/kodi-playing.git
