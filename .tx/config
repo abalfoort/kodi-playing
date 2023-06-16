@@ -1,10 +1,10 @@
 [main]
-host = https://www.transifex.com
+host = https://app.transifex.com
 
 [o:abalfoort:p:kodi-playing:r:kodi-playingpot]
 file_filter = po/<lang>.po
 source_file = po/kodi-playing.pot
-source_lang = en
+source_lang = en_US
 type        = PO
 minimum_perc = 80
 
