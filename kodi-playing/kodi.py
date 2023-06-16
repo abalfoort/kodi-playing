@@ -18,7 +18,7 @@ import os
 import csv
 import subprocess
 import json
-#import socket
+from enum import Enum
 from shutil import copyfile
 from time import gmtime, strftime
 from pathlib import Path
@@ -46,6 +46,11 @@ except ValueError:
 APPINDICATOR_ID = 'kodi-playing'
 _ = gettext.translation(APPINDICATOR_ID, fallback=True).gettext
 
+class MenuIcons(Enum):
+    """ Enum with icon names or paths """
+    PLAY = 'media-playback-start'
+    PAUSE = 'media-playback-pause'
+    SELECT = 'dialog-ok-apply'
 
 class KodiPlaying():
     """ Connect to Kodi player on network and show info in system tray. """
@@ -64,6 +69,7 @@ class KodiPlaying():
         self.mediapath = ''
         self.type = ''
         self.position = -1
+        self.item_play_pause = Gtk.MenuItem.new()
 
         # Create local directory
         os.makedirs(self.local_dir, exist_ok=True)
@@ -73,13 +79,13 @@ class KodiPlaying():
             kodi = self.search_kodi()
             cont = ''
             # Get default settings
-            with open(file=join(self.scriptdir, 'settings.ini'), mode='r', encoding='utf-8') as f:
-                cont = f.read()
+            with open(file=join(self.scriptdir, 'settings.ini'), mode='r', encoding='utf-8') as ini:
+                cont = ini.read()
             if kodi:
                 cont = cont.replace('localhost', kodi)
             # Save settings.ini
-            with open(file=self.conf, mode='w', encoding='utf-8') as f:
-                f.write(cont)
+            with open(file=self.conf, mode='w', encoding='utf-8') as conf:
+                conf.write(cont)
             # Let the user configure the settings and block the process until done
             self.show_settings()
 
@@ -102,13 +108,13 @@ class KodiPlaying():
                                                      AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_title('Kodi Playing')
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
-        self.indicator.set_menu(self.build_menu())
+        self.indicator.set_menu(self._build_menu())
         # Init notifier
         Notify.init(f"{self.address}:{self.port}")
         # Start thread to check for connection changes
-        Thread(target=self.run_check).start()
+        Thread(target=self._run_check).start()
 
-    def run_check(self):
+    def _run_check(self):
         """ Poll Kodi for currently playing song. """
         # Initiate csv file (tab delimited)
         open(file=self.csv, mode='w', encoding='utf-8').close()
@@ -119,11 +125,11 @@ class KodiPlaying():
 
         while not self.check_done_event.is_set():
             # Check if kodi server is online
-            if not self.is_connected(self.address, self.port):
+            if not self._is_connected(self.address, self.port):
                 # Show lost connection message
                 if was_connected:
                     self.player_id = -1
-                    self.indicator.set_menu(self.build_menu())
+                    self.indicator.set_menu(self._build_menu())
                     self.indicator.set_icon_full(self.grey_icon, '')
                     unable_string = _("Unable to connect to:")
                     self.show_notification(summary=f"{unable_string} {self.address}:{self.port}",
@@ -135,15 +141,15 @@ class KodiPlaying():
 
                 # Save player id (-1: no active players)
                 old_player_id = self.player_id
-                self.player_id = self.get_player_id()
+                self.player_id = self._get_player_id()
                 if self.player_id < 0:
                     if old_player_id != self.player_id:
-                        self.indicator.set_menu(self.build_menu())
+                        self.indicator.set_menu(self._build_menu())
                         self.indicator.set_icon_full(self.grey_icon, '')
                 else:
                     if old_player_id != self.player_id:
                         # Connected: build menu and show normal icon
-                        self.indicator.set_menu(self.build_menu())
+                        self.indicator.set_menu(self._build_menu())
                         self.indicator.set_icon_full('kodi-playing', '')
 
                     # Reset variables
@@ -153,14 +159,14 @@ class KodiPlaying():
                     duration = ''
 
                     # Retrieve the title first
-                    js = self.get_playing()
-                    if js:
-                        title = js['result']['item']['title']
-                        artist = ' '.join(js['result']['item']['artist']).replace('"', '')
-                        self.type = js['result']['item']['type']
+                    js_playing = self.get_playing()
+                    if js_playing:
+                        title = js_playing['result']['item']['title']
+                        artist = ' '.join(js_playing['result']['item']['artist']).replace('"', '')
+                        self.type = js_playing['result']['item']['type']
 
                         # Save mediapath
-                        self.mediapath = js['result']['item']['mediapath']
+                        self.mediapath = js_playing['result']['item']['mediapath']
 
                         # Radio plugin title: split on ' - '
                         # https://kodi.wiki/view/Add-on:Radio
@@ -180,11 +186,11 @@ class KodiPlaying():
                         if not skip and title and title !=  prev_title:
                             # Get album and duration
                             try:
-                                album = js['result']['item']['showtitle'].replace('"', '')
+                                album = js_playing['result']['item']['showtitle'].replace('"', '')
                             except KeyError:
-                                album = js['result']['item']['album'].replace('"', '')
+                                album = js_playing['result']['item']['album'].replace('"', '')
                             try:
-                                duration = js['result']['item']['duration']
+                                duration = js_playing['result']['item']['duration']
                             except KeyError:
                                 try:
                                     duration, played, left = self.get_media_times()
@@ -194,8 +200,8 @@ class KodiPlaying():
                             # Check for season/episode and misuse album to show the episode
                             season_episode = ''
                             try:
-                                season = int(js['result']['item']['season'])
-                                episode = int(js['result']['item']['episode'])
+                                season = int(js_playing['result']['item']['season'])
+                                episode = int(js_playing['result']['item']['episode'])
                                 if season > -1 and episode > -1:
                                     # Display with leading zero
                                     season_episode = (f"S{format(season, '02d')}"
@@ -204,7 +210,7 @@ class KodiPlaying():
                                 pass
 
                             # Retrieve thumbnail path
-                            thumbnail = js['result']['item']['thumbnail']
+                            thumbnail = js_playing['result']['item']['thumbnail']
                             thumbnail_path = ''
                             if thumbnail:
                                 thumbnail_path = self.get_thumbnail_path(thumb=thumbnail)
@@ -216,9 +222,9 @@ class KodiPlaying():
 
                             if title != artist:
                                 # Logging
-                                with open(file=self.csv, mode='a', encoding='utf-8') as f:
-                                    f.write(f"{title}\t{artist}\t{album}\t{duration}"
-                                            f"\t{thumbnail_path}\t{season_episode}\n")
+                                with open(file=self.csv, mode='a', encoding='utf-8') as csv_fle:
+                                    csv_fle.write(f"{title}\t{artist}\t{album}\t{duration}"
+                                              f"\t{thumbnail_path}\t{season_episode}\n")
                                 # Save playlist position
                                 self.position = self.get_playlist_position()
                                 # Send notification
@@ -239,8 +245,8 @@ class KodiPlaying():
         # Get last two songs from csv data
         csv_data = []
         i = 0
-        with open(file=self.csv, mode='r', encoding='utf-8') as f:
-            for row in reversed(list(csv.reader(f, delimiter='\t'))):
+        with open(file=self.csv, mode='r', encoding='utf-8') as csv_fle:
+            for row in reversed(list(csv.reader(csv_fle, delimiter='\t'))):
                 i += 1
                 # We need to save the selected song
                 # and the previous song to compare thumbnails
@@ -299,14 +305,14 @@ class KodiPlaying():
                 elif len(csv_data) > 1:
                     if csv_data[0][4] != csv_data[1][4] or index > 1:
                         urlretrieve(csv_data[0][4], self.tmp_thumb)
-            # Episode 
+            # Episode
             if csv_data[0][5]:
                 episode_str = (f"<tr><td><b>{episode_title}</b></td><td>:"
                                f"</td>{spaces}<td>{csv_data[0][5]}</td></tr>")
 
             # Show notification
             if self.notification_timeout > 0:
-                self.show_notification(summary=csv_data[0][0], 
+                self.show_notification(summary=csv_data[0][0],
                                        body=(f"<table>{artist_str}{album_str}"
                                              f"{episode_str}{duration_str}</table>"),
                                        thumb=self.tmp_thumb)
@@ -317,7 +323,7 @@ class KodiPlaying():
             except Exception:
                 pass
 
-    def json_request(self, kodi_request, address, port):
+    def _json_request(self, kodi_request, address, port):
         """ Return json data from Kodi. """
         try:
             request = Request(f"http://{address}:{port}/jsonrpc",
@@ -328,15 +334,15 @@ class KodiPlaying():
         except Exception:
             return ''
 
-    def get_player_id(self):
+    def _get_player_id(self):
         """ Get player id and player type from Kodi. """
         kodi_request = {'jsonrpc': '2.0', 'method': 'Player.GetActivePlayers', 'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_players = self._json_request(kodi_request=kodi_request,
+                                        address=self.address,
+                                        port=self.port)
         try:
             # Assume only one player
-            return js['result'][0]['playerid']
+            return js_players['result'][0]['playerid']
         except Exception:
             return -1
 
@@ -357,11 +363,11 @@ class KodiPlaying():
                                                    'episode'],
                                     'playerid': self.player_id },
                         'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_item = self._json_request(kodi_request=kodi_request,
+                                     address=self.address,
+                                     port=self.port)
         try:
-            return js if js['result']['item']['title'] else ''
+            return js_item if js_item['result']['item']['title'] else ''
         except KeyError:
             return ''
 
@@ -373,13 +379,13 @@ class KodiPlaying():
                             'method': 'Files.PrepareDownload',
                             'params': {'path': thumb},
                             'id': 'preparedl'}
-            js = self.json_request(kodi_request=kodi_request,
-                                   address=self.address,
-                                   port=self.port)
+            js_download = self._json_request(kodi_request=kodi_request,
+                                             address=self.address,
+                                             port=self.port)
             # Occasionally, this error is thrown: TypeError: string indices must be integers
             # In that case the previous thumbnail is used
             return (f"http://{self.kodi_dict['kodi']['address']}:"
-                    f"{self.port}/{js['result']['details']['path']}")
+                    f"{self.port}/{js_download['result']['details']['path']}")
         except Exception:
             return ''
 
@@ -391,11 +397,11 @@ class KodiPlaying():
                         'method': 'Player.GetProperties',
                         'params': { 'playerid': self.player_id, 'properties': ['position'] },
                         'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_properties = self._json_request(kodi_request=kodi_request,
+                                           address=self.address,
+                                           port=self.port)
         try:
-            return js['result']['position']
+            return js_properties['result']['position']
         except KeyError:
             return 0
 
@@ -403,12 +409,12 @@ class KodiPlaying():
         """ Toggle play/pause. """
         if 'plugin://' in self.mediapath:
             # You cannot pause streaming audio from a plugin
-            if self.is_playing():
+            if self._is_playing():
                 self.stop_player()
             else:
-                self.play_mediapath()
+                self._play_mediapath()
             # Set menu label
-            self.set_play_pause_label()
+            self._set_play_pause_label()
         else:
             if self.player_id < 0:
                 if self.position >= 0:
@@ -418,9 +424,9 @@ class KodiPlaying():
                                     'params': {'item': {'playlistid': 0, 
                                                         'position': self.position}},
                                     'id': 1}
-                    self.json_request(kodi_request=kodi_request,
-                                      address=self.address,
-                                      port=self.port)
+                    self._json_request(kodi_request=kodi_request,
+                                       address=self.address,
+                                       port=self.port)
                     # Reset position
                     self.position = -1
                 else:
@@ -431,13 +437,13 @@ class KodiPlaying():
                                 'method': 'Player.PlayPause',
                                 'params': { 'playerid': self.player_id },
                                 'id': 1}
-                self.json_request(kodi_request=kodi_request,
-                                  address=self.address,
-                                  port=self.port)
+                self._json_request(kodi_request=kodi_request,
+                                   address=self.address,
+                                   port=self.port)
             # Set menu label
-            self.set_play_pause_label()
+            self._set_play_pause_label()
 
-    def play_mediapath(self):
+    def _play_mediapath(self):
         """ Start playing mediapath. """
         #kodi_request = {'jsonrpc': '2.0',
         #                'method': 'Player.Open',
@@ -458,9 +464,9 @@ class KodiPlaying():
                          'method': 'Player.Open',
                          'params': {'item': {'playlistid': 0, 'position': 0}},
                          'id': 1}]
-        self.json_request(kodi_request=kodi_request,
-                          address=self.address,
-                          port=self.port)
+        self._json_request(kodi_request=kodi_request,
+                           address=self.address,
+                           port=self.port)
 
     def stop_player(self):
         """ Stop playing. """
@@ -470,39 +476,39 @@ class KodiPlaying():
                         'method': 'Player.Stop',
                         'params': { 'playerid': self.player_id },
                         'id': 1}
-        self.json_request(kodi_request=kodi_request,
-                          address=self.address,
-                          port=self.port)
+        self._json_request(kodi_request=kodi_request,
+                           address=self.address,
+                           port=self.port)
 
     def system_shut_down(self):
         """ Shutdown system. """
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'System.Shutdown',
                         'id': 1}
-        self.json_request(kodi_request=kodi_request,
-                          address=self.address,
-                          port=self.port)
+        self._json_request(kodi_request=kodi_request,
+                           address=self.address,
+                           port=self.port)
 
     def system_reboot(self):
         """ Reboot system. """
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'System.Reboot',
                         'id': 1}
-        self.json_request(kodi_request=kodi_request,
-                          address=self.address,
-                          port=self.port)
+        self._json_request(kodi_request=kodi_request,
+                           address=self.address,
+                           port=self.port)
 
-    def is_idle(self, seconds=60):
+    def _is_idle(self, seconds=60):
         """ Check if Kodi has been idle for x seconds. """
         kodi_request = {'jsonrpc': '2.0',
                         'method': 'XBMC.GetInfoBooleans',
                         'params': { "booleans": [f"System.IdleTime('{seconds}')"] },
                         'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_info = self._json_request(kodi_request=kodi_request,
+                                     address=self.address,
+                                     port=self.port)
         try:
-            return js['result'][f"System.IdleTime('{seconds}')"]
+            return js_info['result'][f"System.IdleTime('{seconds}')"]
         except KeyError:
             return False
 
@@ -515,20 +521,20 @@ class KodiPlaying():
                         'params': { 'playerid': self.player_id, 
                                     'properties': ['percentage', 'totaltime'] },
                         'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_properties = self._json_request(kodi_request=kodi_request,
+                                           address=self.address,
+                                           port=self.port)
         try:
-            duration = ((int(js['result']['totaltime']['hours']) * 60 * 60) +
-                        (int(js['result']['totaltime']['minutes']) * 60) +
-                        int(js['result']['totaltime']['seconds']))
-            played = duration * (float(js['result']['percentage']) / 100)
+            duration = ((int(js_properties['result']['totaltime']['hours']) * 60 * 60) +
+                        (int(js_properties['result']['totaltime']['minutes']) * 60) +
+                        int(js_properties['result']['totaltime']['seconds']))
+            played = duration * (float(js_properties['result']['percentage']) / 100)
             left = duration - played
             return (duration, played, left)
         except Exception:
             return (0, 0)
 
-    def is_playing(self):
+    def _is_playing(self):
         """ Get played seconds of currently playing song. """
         if self.player_id < 0:
             return False
@@ -536,15 +542,15 @@ class KodiPlaying():
                         'method': 'Player.GetProperties',
                         'params': { 'playerid': self.player_id, 'properties': ['speed'] },
                         'id': 1}
-        js = self.json_request(kodi_request=kodi_request,
-                               address=self.address,
-                               port=self.port)
+        js_properties = self._json_request(kodi_request=kodi_request,
+                                           address=self.address,
+                                           port=self.port)
         try:
-            return int(js['result']['speed']) > 0
+            return int(js_properties['result']['speed']) > 0
         except KeyError:
             return False
 
-    def is_connected(self, host, port):
+    def _is_connected(self, host, port):
         """ Check if Kodi server is online. """
         if not host:
             return False
@@ -556,63 +562,101 @@ class KodiPlaying():
         except Exception:
             return False
 
-#         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-#             sock.settimeout(self.wait)
-#             try:
-#                 if sock.connect_ex((host, port)) == 0:
-#                     return True
-#                 else:
-#                     return False
-#             except:
-#                 return False
-
     def search_kodi(self):
         """ Search local network for Kodi servers. """
         # Get list of network IPs
-        ips = subprocess.check_output("arp -n | awk '{if(NR>1)print $1}'",
+        ip_addresses = subprocess.check_output("arp -n | awk '{if(NR>1)print $1}'",
                                       shell=True).decode('utf-8').strip().split('\n')
-        for ip in ips:
-            if self.is_connected(host=ip,
+        for ip_address in ip_addresses:
+            if self._is_connected(host=ip_address,
                                  port=8080):
-                return ip
+                return ip_address
         return ''
 
     # ===============================================
     # System Tray Icon
     # ===============================================
-    def build_menu(self):
-        """ Build menu for the tray icon. """
+    def _get_image(self, icon):
+        """Get GtkImage from icon name or path
+
+        Args:
+            icon (string): icon path
+
+        Returns:
+            Gtk.Image: image binary from path
+        """
+        if not icon:
+            return None
+        if exists(icon):
+            img = Gtk.Image.new_from_file(icon, Gtk.IconSize.MENU)
+        else:
+            img = Gtk.Image.new_from_icon_name(icon, Gtk.IconSize.MENU)
+        return img
+
+    def _menu_item(self, label="", icon=None, function=None, argument=None):
+        """Create MenuItem with given arguments
+
+        Args:
+            label (str, optional): label. Defaults to "".
+            icon (str, optional): icon name/path. Defaults to None.
+            function (obj, optional): function to call when clicked. Defaults to None.
+            argument (str, optional): function argument. Defaults to None.
+
+        Returns:
+            Gtk.MenuItem: menu item for Gtk.Menu
+        """
+        item = Gtk.MenuItem.new()
+        item_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
+
+        if icon:
+            item_box.pack_start(self._get_image(icon=icon), False, False, 0)
+        if label:
+            item_box.pack_start(Gtk.Label.new(label), False, False, 0)
+
+        item.add(item_box)
+        item.show_all()
+
+        if function and argument:
+            item.connect('activate', lambda * a: function(argument))
+        elif function:
+            item.connect('activate', lambda * a: function())
+        return item
+
+    def _build_menu(self):
+        """Build menu for the tray icon.
+
+        Returns:
+            Gtk.Menu: indicator menu
+        """
         menu = Gtk.Menu()
 
         # Kodi menu
         item_kodi = Gtk.MenuItem.new_with_label('Kodi')
         sub_menu = Gtk.Menu()
-        item_csv = Gtk.MenuItem.new_with_label(_("Show played songs"))
-        item_csv.connect('activate', self.show_csv)
+        item_csv = self._menu_item(label=_('Show played songs'),
+                                   function=self.show_csv)
         sub_menu.append(item_csv)
-        item_shut_down = Gtk.MenuItem.new_with_label(_('Shut down'))
-        item_shut_down.connect('activate', self.shut_down)
+        item_shut_down = self._menu_item(label=_('Shut down'),
+                                         function=self.shut_down)
         sub_menu.append(item_shut_down)
-        item_reboot = Gtk.MenuItem.new_with_label(_('Reboot'))
-        item_reboot.connect('activate', self.reboot)
+        item_reboot = self._menu_item(label=_('Reboot'),
+                                      function=self.reboot)
         sub_menu.append(item_reboot)
         sub_menu.append(Gtk.SeparatorMenuItem())
-        item_settings = Gtk.MenuItem.new_with_label(_("Settings"))
-        item_settings.connect('activate', self.show_settings)
-        sub_menu.append(item_settings)
+        sub_menu.append(self._menu_item(label=_('Settings'),
+                                        function=self.show_settings))
         item_kodi.set_submenu(sub_menu)
         menu.append(item_kodi)
 
         # Now playing menu
         menu.append(Gtk.SeparatorMenuItem())
-        item_now_playing = Gtk.MenuItem.new_with_label(_("Now playing"))
-        item_now_playing.connect('activate', self.show_current)
+        item_now_playing = self._menu_item(label=_('Now playing'),
+                                           function=self.show_current)
         menu.append(item_now_playing)
 
         # Play/pause menu
         menu.append(Gtk.SeparatorMenuItem())
-        self.item_play_pause = Gtk.MenuItem.new()
-        self.set_play_pause_label()
+        self._set_play_pause_label()
         self.item_play_pause.connect('activate', self.play_pause)
         menu.append(self.item_play_pause)
 
@@ -623,7 +667,7 @@ class KodiPlaying():
         menu.append(item_quit)
 
         # Decide what can be used
-        if self.is_connected(self.address, self.port):
+        if self._is_connected(self.address, self.port):
             if self.player_id >= 0:
                 item_now_playing.set_sensitive(True)
                 # Add middle click action
@@ -645,12 +689,16 @@ class KodiPlaying():
         menu.show_all()
         return menu
 
-    def set_play_pause_label(self):
+    def _set_play_pause_label(self):
         """ Set label for play/pause button """
-        if self.is_playing():
-            self.item_play_pause.set_label(" ▯▯")
+        if self._is_playing():
+            self.item_play_pause = self._menu_item(label=_('Pause'),
+                                                   icon=MenuIcons.PAUSE.value,
+                                                   function=self.play_pause)
         else:
-            self.item_play_pause.set_label(" ▷")
+            self.item_play_pause = self._menu_item(label=_('Play'),
+                                                   icon=MenuIcons.PLAY.value,
+                                                   function=self.play_pause)
 
     def show_current(self, widget=None):
         """ Show last played song. """
