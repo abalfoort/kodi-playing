@@ -12,10 +12,10 @@ from pathlib import Path
 from os.path import join
 try:
     from .kodi import KodiPlaying
-    from .dialogs import ErrorDialog
+    from .dialogs import error_dialog
 except ImportError:
     from kodi import KodiPlaying
-    from dialogs import ErrorDialog
+    from dialogs import error_dialog
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -67,7 +67,7 @@ def uncaught_excepthook(*args):
             f.write(details)
         title = 'Unexpected error'
         msg = f"Please submit a bug report: {error_file}"
-        ErrorDialog(title, f"<b>{msg}</b>" , f"<tt>{details}</tt>", None, True)
+        error_dialog(title, f"<b>{msg}</b>" , f"<tt>{details}</tt>", None, True)
 
     sys.exit(1)
 
@@ -75,16 +75,9 @@ sys.excepthook = uncaught_excepthook
 
 def main():
     """Main function initiating KodiPlaying class"""
-    # Check if already running
-    cmd = f"pgrep -u {getpass.getuser()} -f 'python3 .*import.*kodi-playing'"
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    pid, err = process.communicate()
-    if len(pid.splitlines()) > 1:
-        print(("kodi-playing is already running - exiting"))
-    else:
-        KodiPlaying()
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-        Gtk.main()
+    KodiPlaying()
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    Gtk.main()
 
 if __name__ == '__main__':
     main()
