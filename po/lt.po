@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-19 18:36+0100\n"
+"POT-Creation-Date: 2023-06-16 04:39+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Moo, 2023\n"
 "Language-Team: Lithuanian (https://www.transifex.com/abalfoort/teams/54212/"
@@ -24,57 +24,65 @@ msgstr ""
 "11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? "
 "1 : n % 1 != 0 ? 2: 3);\n"
 
-#: kodi-playing/kodi.py:128
+#: kodi-playing/kodi.py:134
 msgid "Unable to connect to:"
 msgstr "Nepavyko prisijungti prie:"
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:259
 msgid "Artist"
 msgstr "Atlikėjas"
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:260
 msgid "Album"
 msgstr "Albumas"
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:261
 msgid "Duration"
 msgstr "Trukmė"
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:262
 msgid "Episode"
 msgstr "Serija"
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:263
 msgid "Series"
 msgstr "Serialas"
 
-#: kodi-playing/kodi.py:258
+#: kodi-playing/kodi.py:264
 msgid "Time left"
 msgstr "Liko laiko"
 
-#: kodi-playing/kodi.py:590
+#: kodi-playing/kodi.py:636
 msgid "Show played songs"
 msgstr "Rodyti atkurtas dainas"
 
-#: kodi-playing/kodi.py:593
+#: kodi-playing/kodi.py:639
 msgid "Shut down"
 msgstr "Išjungti"
 
-#: kodi-playing/kodi.py:596
+#: kodi-playing/kodi.py:642
 msgid "Reboot"
 msgstr "Paleisti iš naujo"
 
-#: kodi-playing/kodi.py:600
+#: kodi-playing/kodi.py:646
 msgid "Settings"
 msgstr "Nustatymai"
 
-#: kodi-playing/kodi.py:608
+#: kodi-playing/kodi.py:653
 msgid "Now playing"
 msgstr "Dabar atkuriama"
 
-#: kodi-playing/kodi.py:621
+#: kodi-playing/kodi.py:665
 msgid "Quit"
 msgstr "Išeiti"
+
+#: kodi-playing/kodi.py:695
+msgid "Pause"
+msgstr ""
+
+#: kodi-playing/kodi.py:699
+msgid "Play"
+msgstr ""
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"

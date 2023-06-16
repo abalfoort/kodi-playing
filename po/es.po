@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-19 18:36+0100\n"
+"POT-Creation-Date: 2023-06-16 04:39+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/abalfoort/teams/54212/"
@@ -23,57 +23,65 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: kodi-playing/kodi.py:128
+#: kodi-playing/kodi.py:134
 msgid "Unable to connect to:"
 msgstr "No se puede conectar a:"
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:259
 msgid "Artist"
 msgstr "Artista"
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:260
 msgid "Album"
 msgstr "Álbum"
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:261
 msgid "Duration"
 msgstr "Duración"
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:262
 msgid "Episode"
 msgstr "Episodio"
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:263
 msgid "Series"
 msgstr "Series"
 
-#: kodi-playing/kodi.py:258
+#: kodi-playing/kodi.py:264
 msgid "Time left"
 msgstr "Tiempo restante"
 
-#: kodi-playing/kodi.py:590
+#: kodi-playing/kodi.py:636
 msgid "Show played songs"
 msgstr "Mostrar canciones reproducidas"
 
-#: kodi-playing/kodi.py:593
+#: kodi-playing/kodi.py:639
 msgid "Shut down"
 msgstr "Apagar"
 
-#: kodi-playing/kodi.py:596
+#: kodi-playing/kodi.py:642
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#: kodi-playing/kodi.py:600
+#: kodi-playing/kodi.py:646
 msgid "Settings"
 msgstr "Configuraciones"
 
-#: kodi-playing/kodi.py:608
+#: kodi-playing/kodi.py:653
 msgid "Now playing"
 msgstr "Ahora reproduciendo"
 
-#: kodi-playing/kodi.py:621
+#: kodi-playing/kodi.py:665
 msgid "Quit"
 msgstr "Salir"
+
+#: kodi-playing/kodi.py:695
+msgid "Pause"
+msgstr ""
+
+#: kodi-playing/kodi.py:699
+msgid "Play"
+msgstr ""
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-19 18:36+0100\n"
+"POT-Creation-Date: 2023-06-16 04:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,56 +17,64 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kodi-playing/kodi.py:128
+#: kodi-playing/kodi.py:134
 msgid "Unable to connect to:"
 msgstr ""
 
-#: kodi-playing/kodi.py:253
+#: kodi-playing/kodi.py:259
 msgid "Artist"
 msgstr ""
 
-#: kodi-playing/kodi.py:254
+#: kodi-playing/kodi.py:260
 msgid "Album"
 msgstr ""
 
-#: kodi-playing/kodi.py:255
+#: kodi-playing/kodi.py:261
 msgid "Duration"
 msgstr ""
 
-#: kodi-playing/kodi.py:256
+#: kodi-playing/kodi.py:262
 msgid "Episode"
 msgstr ""
 
-#: kodi-playing/kodi.py:257
+#: kodi-playing/kodi.py:263
 msgid "Series"
 msgstr ""
 
-#: kodi-playing/kodi.py:258
+#: kodi-playing/kodi.py:264
 msgid "Time left"
 msgstr ""
 
-#: kodi-playing/kodi.py:590
+#: kodi-playing/kodi.py:636
 msgid "Show played songs"
 msgstr ""
 
-#: kodi-playing/kodi.py:593
+#: kodi-playing/kodi.py:639
 msgid "Shut down"
 msgstr ""
 
-#: kodi-playing/kodi.py:596
+#: kodi-playing/kodi.py:642
 msgid "Reboot"
 msgstr ""
 
-#: kodi-playing/kodi.py:600
+#: kodi-playing/kodi.py:646
 msgid "Settings"
 msgstr ""
 
-#: kodi-playing/kodi.py:608
+#: kodi-playing/kodi.py:653
 msgid "Now playing"
 msgstr ""
 
-#: kodi-playing/kodi.py:621
+#: kodi-playing/kodi.py:665
 msgid "Quit"
+msgstr ""
+
+#: kodi-playing/kodi.py:695
+msgid "Pause"
+msgstr ""
+
+#: kodi-playing/kodi.py:699
+msgid "Play"
 msgstr ""
 
 #: data/kodi-playing.desktop.in.h:1
