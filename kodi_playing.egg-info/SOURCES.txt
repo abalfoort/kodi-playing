@@ -1,0 +1,17 @@
+README.md
+setup.py
+data/kodi-playing.desktop
+data/kodi-playing.svg
+kodi-playing/__init__.py
+kodi-playing/dialogs.py
+kodi-playing/kodi-playing-autostart.desktop
+kodi-playing/kodi-playing-grey.svg
+kodi-playing/kodi.py
+kodi-playing/settings.ini
+kodi-playing/utils.py
+kodi_playing.egg-info/PKG-INFO
+kodi_playing.egg-info/SOURCES.txt
+kodi_playing.egg-info/dependency_links.txt
+kodi_playing.egg-info/top_level.txt
+man/kodi-playing.1
+scripts/kodi-playing

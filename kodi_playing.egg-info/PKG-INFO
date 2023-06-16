@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: kodi-playing
+Version: 1.2.9
+Summary: Show a notification when your Kodi server is playing a new song
+Home-page: https://gitlab.com/abalfoort/kodi-playing
+Download-URL: https://gitlab.com/abalfoort/kodi-playing/-/archive/master/kodi-playing-master.tar.gz
+Author: Arjen Balfoort
+Author-email: arjenbalfoort@hotmail.com
+Maintainer: 
+Maintainer-email: 
+License: GNU General Public License v2 or later (GPLv2+)
+Platform: POSIX
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Topic :: Utilities
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
+Classifier: Programming Language :: Python :: 3
+
+# kodi-playing
+Show a notification when your Kodi server is playing a new song.
+
+Features:
+
+* Show currently playing song.
+* Pause/play media.
+* Show play list (tab delimited csv with played songs)
+* Settings: kodi address, port, wait until next check, how long to show notifications, patterns to skip, autostart.
+* Shutdown or reboot the system.
+
+## Translations
+You can help translating kodi-playing on [Transifex](https://www.transifex.com/abalfoort/kodi-playing)
+
+## Screenshot
+![System Tray Screenshot](data/screenshot.png)
