@@ -1,5 +1,5 @@
 __title__ = 'kodi-playing'
-__version__ = '1.2.9'
+__version__ = '1.3.0'
 __author__ = 'Arjen Balfoort'
 __author_email__ = 'arjenbalfoort@hotmail.com'
 __maintainer__ = ''
