@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 04:47+0200\n"
+"POT-Creation-Date: 2023-06-20 18:47+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
 "Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/abalfoort/teams/54212/nl/)\n"
@@ -79,7 +79,7 @@ msgstr "Pauze"
 
 #: kodi-playing/kodi.py:699
 msgid "Play"
-msgstr ""
+msgstr "Afspelen"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
