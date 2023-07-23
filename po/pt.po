@@ -5,16 +5,17 @@
 #
 # Translators:
 # Arjen Balfoort <arjenbalfoort@hotmail.com>, 2023
+# ilu lu, 2023
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 04:39+0200\n"
+"POT-Creation-Date: 2023-07-21 18:20+0200\n"
 "PO-Revision-Date: 2020-12-31 15:03+0000\n"
-"Last-Translator: Arjen Balfoort <arjenbalfoort@hotmail.com>, 2023\n"
-"Language-Team: Portuguese (https://www.transifex.com/abalfoort/teams/54212/"
+"Last-Translator: ilu lu, 2023\n"
+"Language-Team: Portuguese (https://app.transifex.com/abalfoort/teams/54212/"
 "pt/)\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -77,11 +78,11 @@ msgstr "Sair"
 
 #: kodi-playing/kodi.py:695
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: kodi-playing/kodi.py:699
 msgid "Play"
-msgstr ""
+msgstr "Reproduzir"
 
 #: data/kodi-playing.desktop.in.h:1
 msgid "Notification for what is playing on Kodi"
