@@ -1,3 +1,9 @@
+kodi-playing (1.3.1) stable; urgency=low
+
+  * Updated translations: de, es, es_419, fr, it, pt, sr
+
+ -- Arjen Balfoort <arjenbalfoort@hotmail.com>  Fri, 21 Jul 2023 18:20:02 +0200
+
 kodi-playing (1.3.0) stable; urgency=low
 
   * Updated translation: lt
