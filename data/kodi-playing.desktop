@@ -10,6 +10,7 @@ Comment[it]=Notifica di cosa è in riproduzione su Kodi
 Comment[lt]=Pranešimas apie tai, ką atkuria Kodi
 Comment[nl]=Notificatie voor wat Kodi afspeelt
 Comment[pt]=Notificação sobre o que toca no Kodi
+Comment[ru]=Уведомление о том, что играет на Kodi
 Comment[sr]=Обавештење шта пушта Коди
 Type=Application
 Exec=kodi-playing
